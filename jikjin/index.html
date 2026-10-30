@@ -201,7 +201,7 @@ tr.has td.c1{background:#f5f9ff}tr.has td{background:#fbfdff}
 // 브랜드: ?brand=rouet|dali 로 고르고, 없으면 이 기기에서 마지막에 본 브랜드(clv_jj_brand), 그것도 없으면 루엣. 자료·입력분은 브랜드별 폴더(rouet/, dali/)에 따로 있습니다.
 const BRANDS={rouet:{label:'루엣',short:'루엣'},dali:{label:'달리호텔',short:'달리'}};
 const BRAND=(function(){let b='';try{b=new URLSearchParams(location.search).get('brand')||'';}catch(e){}if(!BRANDS[b]){try{b=localStorage.getItem('clv_jj_brand')||'';}catch(e){}}if(!BRANDS[b])b='rouet';try{localStorage.setItem('clv_jj_brand',b);}catch(e){}return b;})();
-const CFG={brand:BRAND,label:BRANDS[BRAND].label,repo:'clovism-clo/clovism-sales',entriesPath:'jikjin/'+BRAND+'/entries.json',dataUrl:BRAND+'/data.enc',entriesUrl:BRAND+'/entries.json',lsEntries:'clv_jj_entries_'+BRAND,lsToken:'clv_gh_token',xlsx:'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'};
+const CFG={brand:BRAND,label:BRANDS[BRAND].label,repo:'clovism-tech/clovism-sales',entriesPath:'jikjin/'+BRAND+'/entries.json',dataUrl:BRAND+'/data.enc',entriesUrl:BRAND+'/entries.json',lsEntries:'clv_jj_entries_'+BRAND,lsToken:'clv_gh_token',xlsx:'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'};
 document.title='직진 재고·출고 대시보드 · '+CFG.label;document.getElementById('loginBrand').textContent=CFG.label;
 document.getElementById('tabLnkMaster').href='master.html?brand='+BRAND;document.getElementById('tabLnkAbly').href='ably.html?brand='+BRAND;
 document.querySelectorAll('#brands a').forEach(a=>{a.classList.toggle('on',a.dataset.brand===BRAND);a.title=a.dataset.brand===BRAND?BRANDS[BRAND].label+' 자료를 보고 있습니다':BRANDS[a.dataset.brand].label+' 자료로 바꿉니다';});

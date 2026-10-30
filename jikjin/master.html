@@ -144,7 +144,7 @@ dali:{label:'달리호텔',short:'달리',srcLbl:'소싱 구분',srcS:'셀메이
  priceNote:'원가·정상가는 셀메이트, 자사몰 판매가는 카카오 스토어 판매가, 직진 판매가는 카카오 직진배송 판매가이고 배수는 직진 판매가 ÷ 원가입니다.'}};
 const BRAND=(function(){let b='';try{b=new URLSearchParams(location.search).get('brand')||'';}catch(e){}if(!BRANDS[b]){try{b=localStorage.getItem('clv_jj_brand')||'';}catch(e){}}if(!BRANDS[b])b='rouet';try{localStorage.setItem('clv_jj_brand',b);}catch(e){}return b;})();
 const BR=BRANDS[BRAND];
-const CFG={brand:BRAND,label:BR.label,repo:'clovism-clo/clovism-sales',dataUrl:BRAND+'/master.enc',lsToken:'clv_gh_token',xlsx:'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'};
+const CFG={brand:BRAND,label:BR.label,repo:'clovism-tech/clovism-sales',dataUrl:BRAND+'/master.enc',lsToken:'clv_gh_token',xlsx:'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'};
 const PAGE=300;
 document.title='상품마스터 대시보드 · '+CFG.label;document.getElementById('loginBrand').textContent=CFG.label;
 document.querySelectorAll('#brands a').forEach(a=>{a.classList.toggle('on',a.dataset.brand===BRAND);a.title=a.dataset.brand===BRAND?BR.label+' 자료를 보고 있습니다':BRANDS[a.dataset.brand].label+' 자료로 바꿉니다';});

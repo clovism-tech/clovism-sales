@@ -168,7 +168,7 @@ td.q input{width:68px;text-align:right;font:inherit;font-size:13px;padding:4px 6
 // 에이블리 도착보장 대시보드 (2026-10-13). 루엣·달리 공용, ?brand= 로 전환. 자료는 <brand>/ably.enc (ably_compute.js 결과를 build_dashboard.js 가 암호화)
 const BRANDS={rouet:{label:'루엣'},dali:{label:'달리호텔'}};
 const BRAND=(function(){let b='';try{b=new URLSearchParams(location.search).get('brand')||'';}catch(e){}if(!BRANDS[b]){try{b=localStorage.getItem('clv_jj_brand')||'';}catch(e){}}if(!BRANDS[b])b='dali';try{localStorage.setItem('clv_jj_brand',b);}catch(e){}return b;})();
-const CFG={brand:BRAND,label:BRANDS[BRAND].label,dataUrl:BRAND+'/ably.enc',repo:'clovism-clo/clovism-sales',lsToken:'clv_gh_token',xlsx:'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'};
+const CFG={brand:BRAND,label:BRANDS[BRAND].label,dataUrl:BRAND+'/ably.enc',repo:'clovism-tech/clovism-sales',lsToken:'clv_gh_token',xlsx:'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'};
 // 입고 수량·패키지명은 ably_entries.json(같은 비밀번호로 암호화)에 페이지가 직접 저장 (상품마스터 campaigns.json 과 같은 방식)
 const AE={path:'jikjin/'+BRAND+'/ably_entries.json',url:BRAND+'/ably_entries.json',ls:'clv_ably_ent_'+BRAND};
 document.title='에이블리 도착보장 · '+CFG.label;
