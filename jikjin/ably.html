@@ -75,6 +75,17 @@ td.q input{width:68px;text-align:right;font:inherit;font-size:13px;padding:4px 6
 .colp .cpb{display:flex;gap:6px;justify-content:flex-end}.colp .cpb .btn{min-height:30px;padding:4px 10px;font-size:12.5px}.colp .cpb [data-a=reset]{margin-right:auto}
 .cmline{position:fixed;z-index:70;width:3px;background:var(--acc);border-radius:2px;pointer-events:none;box-shadow:0 0 0 1px #fff}thead th.cmsrc{opacity:.45}body.cmdragging,body.cmdragging *{cursor:grabbing!important;user-select:none!important}
 .newb{display:inline-block;background:#dc2626;color:#fff;border-radius:4px;padding:0 5px;font-size:10.5px;font-weight:700;margin-right:5px;vertical-align:1px;letter-spacing:.2px}tr.isnew td,tr.isnew td.c1{background:#fff7ed}#ctbl td.sm{background:#ecfdf5;font-weight:700;color:#047857}#canTh{width:64px;font:inherit;padding:4px 6px;border:1px solid #d1d5db;border-radius:6px}
+.foot{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:8px 16px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;z-index:6;box-shadow:0 -4px 16px rgba(0,0,0,.06)}
+.foot .sum{flex:1;font-size:13px;min-width:150px}
+.foot .sum b{font-size:15px}
+.foot .st{display:block;font-size:11px;color:#6b7280}
+.foot .st.dirty{color:#b45309}
+body{padding-bottom:84px}
+body.nofoot{padding-bottom:24px}
+.card.acc{border-color:#93c5fd;background:#eff6ff}
+.card.acc .n{color:var(--acc)}
+.card.clk.on{outline:2px solid var(--acc);outline-offset:-1px}
+td.q small{display:block;font-size:10.5px;color:#6b7280;margin-top:2px}
 </style></head><body>
 <div class="ov" id="login"><form class="box" id="loginForm"><h2>에이블리 도착보장 대시보드 <span class="tag" id="loginBrand"></span></h2><p>매출보고 페이지와 같은 비밀번호를 입력하면 자료가 열립니다.</p>
 <input type="password" id="pw" placeholder="비밀번호" autocomplete="current-password" autofocus>
@@ -86,10 +97,10 @@ td.q input{width:68px;text-align:right;font:inherit;font-size:13px;padding:4px 6
  <div class="card"><div class="t">도착보장 옵션</div><div class="n" id="kOpt">-</div><div class="s" id="kOptS"></div></div>
  <div class="card"><div class="t">판매 가능 재고 · 입고 예정</div><div class="n" id="kStock">-</div><div class="s" id="kStockS"></div></div>
  <div class="card"><div class="t">최근 7일 판매</div><div class="n" id="kSale">-</div><div class="s" id="kSaleS"></div></div>
- <div class="card clk" id="kInC" role="button" tabindex="0" title="누르면 재고 · 입고 탭에서 입고 수량을 적은 옵션만 보입니다 (다시 누르면 해제)"><div class="t">입고 입력 <small>입고신청 목록 전체</small></div><div class="n" id="kIn">-</div><div class="s" id="kInS"></div></div>
+ <div class="card acc clk" id="kInC" role="button" tabindex="0" title="누르면 재고 · 출고 탭에서 출고 수량을 적은 옵션만 보입니다 (다시 누르면 해제)"><div class="t">출고 입력 <span id="kDateLbl"></span></div><div class="n" id="kIn">-</div><div class="s" id="kInS"></div></div>
  <div class="card" id="kIssueC"><div class="t">세팅 확인 필요</div><div class="n" id="kIssue">-</div><div class="s" id="kIssueS"></div></div>
 </div>
-<div class="tabs" role="tablist"><button type="button" data-tab="set" role="tab">세팅 점검<span class="c" id="tcSet">0</span></button><button type="button" data-tab="stock" role="tab">재고 · 입고<span class="c" id="tcStock">0</span></button><button type="button" data-tab="can" role="tab">입고 가능<span class="c" id="tcCan">0</span></button><button type="button" data-tab="in" role="tab">입고신청<span class="c" id="tcIn">0</span></button></div>
+<div class="tabs" role="tablist"><button type="button" data-tab="set" role="tab">세팅 점검<span class="c" id="tcSet">0</span></button><button type="button" data-tab="stock" role="tab">재고 · 출고<span class="c" id="tcStock">0</span></button><button type="button" data-tab="can" role="tab">입고 가능<span class="c" id="tcCan">0</span></button><button type="button" data-tab="in" role="tab">입고신청<span class="c" id="tcIn">0</span></button></div>
 
 <section id="tabSet">
  <p class="note">도착보장은 상품 수정 화면에서 옵션마다 <b>도착보장 스위치를 켜고 솔루션사 코드(바코드)를 넣어야</b> 재고 목록에 올라옵니다. 입고 바코드는 에이블리 상품 목록의 <b>솔루션사 고유코드</b>이고, 그것이 없을 때만 3PL 상품 바코드(입고 이력이 생기면 채워짐)를 씁니다. 아래는 그 세팅에서 손볼 곳입니다. '넣을 바코드'는 셀메이트에 있는 솔루션사 코드이거나, 품번과 옵션으로 셀메이트에서 찾은 바코드입니다. 수정 화면에서 고친 뒤 <b>에이블리마스터_업데이트.cmd</b> 를 실행하면 바로 다시 점검합니다(평소에는 매시간 자동 갱신).</p>
@@ -102,11 +113,13 @@ td.q input{width:68px;text-align:right;font:inherit;font-size:13px;padding:4px 6
 
 <section id="tabStock" hidden>
  <div class="bar">
+  <label>출고 일자 <input type="date" id="date"></label>
+  <label>지난 입력 <select id="hist"><option value="">(없음)</option></select></label>
   <input type="search" id="q" placeholder="품번 · 상품명 · 옵션 · 바코드 · 상품번호 검색" autocomplete="off">
   <div class="ms" id="msFilter" data-title="조건"><button type="button" class="msb"></button><div class="msp" hidden></div></div>
   <div class="ms" id="msSeason" data-title="계절"><button type="button" class="msb"></button><div class="msp" hidden></div></div>
   <div class="ms" id="msYear" data-title="연도"><button type="button" class="msb"></button><div class="msp" hidden></div></div>
-  <select id="fSort" title="정렬"><option value="">NEW 먼저 · 남은 일수 적은 순 (기본)</option><option value="added">추가일 최근 순</option><option value="$rec">권장 입고 많은 순</option><option value="d7">최근 7일 판매 많은 순</option><option value="$s">기간 판매 많은 순</option><option value="avail">판매 가능 많은 순</option><option value="$qty">입고 수량 많은 순</option><option value="name">상품명 순</option><option value="code">품번 순</option></select>
+  <select id="fSort" title="정렬"><option value="">NEW 먼저 · 남은 일수 적은 순 (기본)</option><option value="added">추가일 최근 순</option><option value="$rec">권장 입고 많은 순</option><option value="d7">최근 7일 판매 많은 순</option><option value="$s">기간 판매 많은 순</option><option value="avail">판매 가능 많은 순</option><option value="$qty">출고 입력 많은 순</option><option value="name">상품명 순</option><option value="code">품번 순</option></select>
   <label>판매 기준 <select id="fBase"><option value="7">최근 7일 평균</option><option value="14">최근 14일 평균</option><option value="30">최근 30일 평균</option></select></label>
   <label>목표 <select id="fDays"><option value="6">6일분 (기본)</option><option value="10">10일분 (설 연휴)</option><option value="14">14일분</option></select></label>
   <span class="note" id="aShown" style="margin:0"></span>
@@ -115,8 +128,7 @@ td.q input{width:68px;text-align:right;font:inherit;font-size:13px;padding:4px 6
   <button type="button" class="btn sub cmb" id="cmA" title="열 순서를 바꾸거나 열을 숨깁니다. 표의 열 제목을 잡고 옆으로 끌어도 옮겨집니다">열 설정</button>
  </div>
  <div class="bar inbar">
-  <button type="button" class="btn sub" id="fillRec" title="지금 표에 보이는 옵션 중 권장 입고가 있고 아직 입고 목록에 없는 옵션을 입고신청 탭 목록 끝에 더합니다 (수량 = 권장 입고와 보낼 수 있음 중 작은 값)">권장 수량을 입고 목록에 추가</button>
-  <button type="button" class="btn sub" id="resetQty" title="입고 수량과 입고신청 탭 목록을 모두 지웁니다">입고 수량 전체 초기화</button>
+  <button type="button" class="btn sub" id="fillRec" title="지금 표에 보이는 옵션 중 권장 입고가 있고 아직 출고 입력이 없는 옵션에 권장 수량을 넣습니다 (수량 = 권장 입고와 보낼 수 있음 중 작은 값)">권장 수량을 출고 입력에 넣기</button>
   <button type="button" class="btn sub" id="dlCsv">표 CSV</button>
   <span class="note" id="qtyNote"></span>
  </div>
@@ -130,9 +142,9 @@ td.q input{width:68px;text-align:right;font:inherit;font-size:13px;padding:4px 6
   <label>셀메 가용재고 <input type="number" id="canTh" min="1" step="1"> 개 이상</label>
   <input type="search" id="canQ" placeholder="품번 · 상품명 · 옵션 · 바코드 검색" autocomplete="off">
   <select id="canSort" title="정렬"><option value="sm">셀메 가용재고 많은 순</option><option value="rec">권장 입고 많은 순</option><option value="left">남은 일수 적은 순</option><option value="d7">최근 7일 판매 많은 순</option><option value="avail">판매 가능 적은 순</option><option value="name">상품명 순</option></select>
-  <label class="chk"><input type="checkbox" id="canNot"> 입고 목록에 아직 없는 것만</label>
+  <label class="chk"><input type="checkbox" id="canNot"> 출고 입력에 아직 없는 것만</label>
   <span class="note" id="canShown" style="margin:0"></span>
-  <button type="button" class="btn sub" id="canAdd" title="이 탭에 보이는 옵션 중 권장 입고가 있고 아직 입고 목록에 없는 옵션을 입고신청 탭 목록 끝에 더합니다 (수량 = 권장 입고와 보낼 수 있음 중 작은 값)">권장 수량을 입고 목록에 추가</button>
+  <button type="button" class="btn sub" id="canAdd" title="이 탭에 보이는 옵션 중 권장 입고가 있고 아직 출고 입력이 없는 옵션에 권장 수량을 넣습니다 (수량 = 권장 입고와 보낼 수 있음 중 작은 값)">권장 수량을 출고 입력에 넣기</button>
   <button type="button" class="btn sub" id="canXls">엑셀</button>
   <button type="button" class="btn sub cmb" id="cmC" title="열 순서를 바꾸거나 열을 숨깁니다. 표의 열 제목을 잡고 옆으로 끌어도 옮겨집니다">열 설정</button>
  </div>
@@ -141,25 +153,31 @@ td.q input{width:68px;text-align:right;font:inherit;font-size:13px;padding:4px 6
 </section>
 
 <section id="tabIn" hidden>
- <p class="note">패키지(박스)에 넣는 순서대로 <b>패키지명 · 바코드 · 수량</b>만 적으면 SKU번호 · 상품명 · 옵션이 바로 채워지고(엑셀 VLOOKUP 처럼), 엑셀도 <b>적은 순서 그대로</b> 만들어집니다. 바코드는 도착보장 옵션의 <b>솔루션사 고유코드</b>로 찾습니다(3PL 바코드 · 셀메 바코드로도 찾음). 패키지명을 비워 두면 윗줄 패키지를 따라가므로, 박스가 바뀌는 줄에만 새 패키지명을 적으면 됩니다. 바코드에서 Enter(스캐너)를 누르면 수량으로, 수량에서 Enter 를 누르면 다음 줄 바코드로 넘어갑니다. 엑셀에서 패키지명 · 바코드 · 수량(또는 바코드 · 수량) 열을 복사해 붙여 넣어도 됩니다. 담당자에게 받은 <b>패키징(송장번호) 파일</b>은 [패키징 파일 불러오기] 를 누르거나 이 화면에 끌어다 놓으면 파일의 패킹 순서 그대로 들어갑니다(행을 통째로 붙여 넣어도 바코드 · 수량 · 패키지 열을 알아서 찾음, 패키지 열이 없으면 송장번호마다 (1), (2)…).</p>
+ <p class="note">패키지(박스)에 넣는 순서대로 <b>패키지명 · 바코드 · 수량</b>만 적으면 SKU번호 · 상품명 · 옵션이 바로 채워지고(엑셀 VLOOKUP 처럼), 엑셀도 <b>적은 순서 그대로</b> 만들어집니다. 바코드는 도착보장 옵션의 <b>솔루션사 고유코드</b>로 찾습니다(3PL 바코드 · 셀메 바코드로도 찾음). 패키지명을 비워 두면 윗줄 패키지를 따라가므로, 박스가 바뀌는 줄에만 새 패키지명을 적으면 됩니다. 바코드에서 Enter(스캐너)를 누르면 수량으로, 수량에서 Enter 를 누르면 다음 줄 바코드로 넘어갑니다. 엑셀에서 패키지명 · 바코드 · 수량(또는 바코드 · 수량) 열을 복사해 붙여 넣어도 됩니다. 담당자에게 받은 <b>패키징(송장번호) 파일</b>은 [패키징 파일 불러오기] 를 누르거나 이 화면에 끌어다 놓으면 파일의 패킹 순서 그대로 들어갑니다(행을 통째로 붙여 넣어도 바코드 · 수량 · 패키지 열을 알아서 찾음, 패키지 열이 없으면 송장번호마다 (1), (2)…). 목록은 <b>출고 일자별</b>로 저장되고 [저장] 을 누르면 GitHub 에도 올라갑니다.</p>
  <div class="bar inbar">
-  <button type="button" class="btn" id="inFile">패키징 파일 불러오기</button><input type="file" id="inFileIn" accept=".xlsx,.xls,.xlsm,.csv" hidden>
+  <label>출고 일자 <input type="date" id="uDate"></label>
+  <button type="button" class="btn pri" id="inFile">패키징 파일 불러오기</button><input type="file" id="inFileIn" accept=".xlsx,.xls,.xlsm,.csv" hidden>
   <label>검품 방식 <select id="insp"><option>스탠다드</option><option>프로</option></select></label>
-  <button type="button" class="btn pri" id="dlIn">입고신청 엑셀</button>
-  <button type="button" class="btn" id="dlSm">셀메이트 주문등록 엑셀</button>
-  <button type="button" class="btn sub" id="clearIn">전체 초기화</button>
+  <button type="button" class="btn" id="dlIn">입고신청 .xlsx</button>
+  <button type="button" class="btn sub" id="uFrom" title="재고 · 출고 탭에서 이 날짜에 입력한 출고 수량을 한 패키지로 목록에 넣습니다">출고 입력에서 가져오기</button>
+  <button type="button" class="btn sub" id="uClear" title="이 출고 일자의 입고신청 목록만 지웁니다 (출고 입력은 그대로)">목록 비우기</button>
   <span class="note" id="inNote" style="margin:0"></span>
  </div>
- <div class="bar" style="margin-top:-2px">
-  <button type="button" class="btn sub sm" id="aSave">저장</button>
-  <button type="button" class="btn sub sm" id="aGh">GitHub 연결</button>
-  <span class="note" id="aSt" style="margin:0"></span>
- </div>
- <div class="wrap"><table id="itbl"><thead><tr><th>#</th><th class="l">패키지명</th><th class="l">바코드<small>솔루션사 코드</small></th><th>수량</th><th class="l">SKU번호</th><th class="l">상품명 · 옵션</th><th>판매 가능<small>입고 예정</small></th><th>보낼 수 있음<small>셀메 창고 − 미발송</small></th><th class="l">확인</th><th></th></tr></thead><tbody id="inb"></tbody></table></div>
- <p class="note">같은 패키지에 같은 옵션을 두 줄 적으면 엑셀에서는 한 줄로 합칩니다. '확인'이 빨간 줄(바코드를 못 찾음 · 수량 없음)은 엑셀에서 빠집니다. 셀메이트 주문등록 엑셀은 옵션별로 합친 수량입니다.</p>
+ <div class="wrap"><table id="itbl"><thead><tr><th>#</th><th class="l">패키지명</th><th class="l">바코드<small>솔루션사 코드</small></th><th>수량</th><th class="l">SKU번호</th><th class="l">상품명 · 옵션</th><th>판매 가능<small>입고 예정</small></th><th>보낼 수 있음<small>셀메 창고 − 미발송</small></th><th>출고 입력<small>같은 날짜</small></th><th class="l">확인</th><th></th></tr></thead><tbody id="inb"></tbody></table></div>
+ <p class="note" id="uCmp"></p>
+ <p class="note">같은 패키지에 같은 옵션을 두 줄 적으면 엑셀에서는 한 줄로 합칩니다. '확인'이 빨간 줄(바코드를 못 찾음 · 수량 없음)은 엑셀에서 빠집니다. 입고신청 .xlsx 는 이 목록 순서대로, 목록이 비어 있으면 재고 · 출고 탭의 출고 입력을 한 패키지로 만듭니다.</p>
 </section>
 </main>
-<div class="ov" id="tokenOv" hidden><form class="box" id="tokenForm"><h2>GitHub 연결 (입고 목록 저장)</h2><p>입고신청 목록을 모든 기기에서 같이 보려면 GitHub 토큰이 필요합니다. 토큰이 없으면 입력한 내용은 이 기기(브라우저)에만 남고, 엑셀 내려받기는 그대로 됩니다.<br>토큰은 이 기기에만 저장되며 직진 재고·출고 대시보드나 상품마스터에서 이미 연결했다면 같은 토큰을 그대로 씁니다.</p>
+<div class="foot" id="foot" hidden>
+ <div class="sum"><b id="fSum">0건 · 0개</b><span class="st" id="fSt"></span></div>
+ <button type="button" class="btn pri" id="bSave">저장</button>
+ <button type="button" class="btn" id="bSm" title="출고 일자에 적은 출고 입력으로 셀메이트 주문등록(1-1 양식) .xls 파일을 만듭니다">셀메 등록 .xls</button>
+ <button type="button" class="btn" id="bIn" title="입고신청 탭 목록 순서대로(비어 있으면 출고 입력을 한 패키지로) 에이블리 엑셀 대량 입고 양식 .xlsx 를 만듭니다">입고신청 .xlsx</button>
+ <button type="button" class="btn" id="bCopy" title="출고 입력한 옵션의 입고 바코드(솔루션사 코드)를 복사합니다">바코드 복사</button>
+ <button type="button" class="btn sub" id="bReset" title="이 출고 일자의 출고 입력과 입고신청 목록을 모두 지웁니다">입력 초기화</button>
+ <button type="button" class="btn sub" id="bGh">GitHub 연결</button>
+</div>
+<div class="ov" id="tokenOv" hidden><form class="box" id="tokenForm"><h2>GitHub 연결 (입력분 저장)</h2><p>출고 입력과 입고신청 목록을 모든 기기에서 같이 보려면 GitHub 토큰이 필요합니다. 토큰이 없으면 입력분은 이 기기(브라우저)에만 남고, 내려받기·복사는 그대로 됩니다.<br>토큰은 이 기기에만 저장되며 직진 재고·출고 대시보드나 상품마스터에서 이미 연결했다면 같은 토큰을 그대로 씁니다.</p>
 <input type="password" id="tokenIn" placeholder="github_pat_… (비워 두면 연결 해제)" autocomplete="off">
 <div class="row" style="margin-top:12px"><button type="submit" class="btn pri">저장</button><button type="button" class="btn sub" id="tokenCancel">닫기</button></div><div class="err" id="tokenErr"></div></form></div>
 <div class="toast" id="toast"></div>
@@ -169,7 +187,7 @@ td.q input{width:68px;text-align:right;font:inherit;font-size:13px;padding:4px 6
 const BRANDS={rouet:{label:'루엣'},dali:{label:'달리호텔'}};
 const BRAND=(function(){let b='';try{b=new URLSearchParams(location.search).get('brand')||'';}catch(e){}if(!BRANDS[b]){try{b=localStorage.getItem('clv_jj_brand')||'';}catch(e){}}if(!BRANDS[b])b='dali';try{localStorage.setItem('clv_jj_brand',b);}catch(e){}return b;})();
 const CFG={brand:BRAND,label:BRANDS[BRAND].label,dataUrl:BRAND+'/ably.enc',repo:'clovism-tech/clovism-sales',lsToken:'clv_gh_token',xlsx:'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'};
-// 입고 수량·패키지명은 ably_entries.json(같은 비밀번호로 암호화)에 페이지가 직접 저장 (상품마스터 campaigns.json 과 같은 방식)
+// 출고 입력(날짜별 옵션 수량)과 입고신청 목록(패키지명·바코드·수량)은 ably_entries.json(같은 비밀번호로 암호화)에 페이지가 직접 저장 (직진 대시보드 entries.json 과 같은 구조, 2026-10-30)
 const AE={path:'jikjin/'+BRAND+'/ably_entries.json',url:BRAND+'/ably_entries.json',ls:'clv_ably_ent_'+BRAND};
 document.title='에이블리 도착보장 · '+CFG.label;
 const $=s=>document.querySelector(s);
@@ -201,49 +219,75 @@ async function ghPutPath(path,enc,sha,msg){const body={message:msg,content:btoa(
 
 const D={doc:null,items:[],tab:'set',sort:'',dir:1,q:'',base:'7',days:'6',inOnly:false,cond:new Set(),seas:new Set(),yrs:new Set(),qty:{}};
 const LSQ='clv_ably_qty_'+BRAND, LSO='clv_ably_opt_'+BRAND;
-const S={pw:'',token:ls(CFG.lsToken)||''};
+const S={pw:'',token:ls(CFG.lsToken)||'',date:todayKst()};
 
-// ---- 입고 목록 저장: E={lines:[[패키지명,바코드,수량],…], t:마지막 수정 시각}. 기기 사이에는 더 나중에 고친 목록이 이김 ----
-let E={lines:[],t:''},eSha=null,eDirty=false,eSaved=null;
+// ---- 출고 입력 · 입고신청 목록 저장 (2026-10-30, 직진 대시보드와 같은 구조) ----
+// A.entries[출고 일자] = {savedAt, items:{옵션번호: 출고 수량}, pack:{lines:[[패키지명,바코드,수량],…], t}}
+// 파일 ably_entries.json = 암호화({v:2, entries}). 이전 형식 {lines,t} / {qty,pkg}(날짜 없는 입고 목록)는 마지막 수정 시각의 날짜로 옮김. 기기 사이에는 날짜별로 더 나중에 고친 쪽이 이김
+const A={entries:{}};let eSha=null,eDirty=false,eSaved=null;
 const nowIso=()=>new Date().toISOString();
+const ymd=d=>String(d||'').replace(/-/g,'');
+function serial(d){return Math.round((Date.UTC(+d.slice(0,4),+d.slice(5,7)-1,+d.slice(8,10))-Date.UTC(1899,11,30))/86400000);}
+const kstDate=t=>{const v=Date.parse(t||'');return isNaN(v)?todayKst():new Date(v+9*3600e3).toISOString().slice(0,10);};
+function dayEnt(){let e=A.entries[S.date];if(!e)e=A.entries[S.date]={savedAt:'',items:{},pack:{lines:[],t:''}};if(!e.items)e.items={};if(!e.pack||!Array.isArray(e.pack.lines))e.pack={lines:[],t:''};return e;}
+// E.lines = 지금 출고 일자의 입고신청 목록 (아래 목록 편집 코드가 그대로 씀)
+const E={get lines(){return dayEnt().pack.lines;},set lines(v){dayEnt().pack.lines=v;}};
+function cur(){const e=A.entries[S.date];return e&&e.items||{};}
+const hasEnt=e=>!!e&&(Object.keys(e.items||{}).length>0||!!(e.pack&&e.pack.lines&&e.pack.lines.length));
+function normDay(e){if(!e||typeof e!=='object')return null;const o={savedAt:String(e.savedAt||''),items:{},pack:null};for(const k in (e.items||{})){const q=Math.max(0,Math.round(+e.items[k]||0));if(q>0)o.items[k]=q;}const L=e.pack&&Array.isArray(e.pack.lines)?e.pack.lines.filter(l=>Array.isArray(l)).map(l=>[String(l[0]==null?'':l[0]),String(l[1]==null?'':l[1]),Math.max(0,Math.round(+l[2]||0))]):[];o.pack={lines:L,t:String(e.pack&&e.pack.t||'')};return o;}
 function entNorm(j){
-  if(!j)return null;
-  if(Array.isArray(j.lines))return {lines:j.lines.filter(l=>Array.isArray(l)).map(l=>[String(l[0]==null?'':l[0]),String(l[1]==null?'':l[1]),Math.max(0,Math.round(+l[2]||0))]),t:String(j.t||'')};
-  // 이전 형식 {qty:{옵션번호:[수량,시각]}, pkg:[패키지명,시각]} (옵션별 입고 수량) → 표 순서대로 목록에 옮김
-  if(j.qty){let t=j.pkg&&j.pkg[1]||'';const p=j.pkg&&j.pkg[0]||'';const lines=[];D.items.forEach(x=>{const v=j.qty[x.oNo];if(!v)return;if((v[1]||'')>t)t=v[1];if(+v[0]>0)lines.push([lines.length?'':p,inBc(x),+v[0]]);});return {lines,t};}
-  return null;
+  if(!j||typeof j!=='object')return null;
+  if(j.entries&&typeof j.entries==='object'){const o={};for(const d in j.entries){const e=normDay(j.entries[d]);if(e&&/^\d{4}-\d{2}-\d{2}$/.test(d))o[d]=e;}return o;}
+  // 이전 형식 → 마지막 수정 시각의 날짜 하나로. 옵션별 출고 입력은 그 목록에서 만듦
+  let ln=null,t='';
+  if(Array.isArray(j.lines)){ln=j.lines.filter(l=>Array.isArray(l)).map(l=>[String(l[0]==null?'':l[0]),String(l[1]==null?'':l[1]),Math.max(0,Math.round(+l[2]||0))]);t=String(j.t||'');}
+  else if(j.qty){t=j.pkg&&j.pkg[1]||'';const p=j.pkg&&j.pkg[0]||'';ln=[];D.items.forEach(x=>{const v=j.qty[x.oNo];if(!v)return;if((v[1]||'')>t)t=v[1];if(+v[0]>0)ln.push([ln.length?'':p,inBc(x),+v[0]]);});}
+  if(!ln||!ln.length)return null;
+  const items={};ln.forEach(l=>{const h=look(l[1]);if(h&&h.length===1&&+l[2]>0)items[h[0].oNo]=(items[h[0].oNo]||0)+(+l[2]);});
+  const o={};o[kstDate(t)]={savedAt:t||nowIso(),items,pack:{lines:ln,t}};return o;
 }
+function merge(a,b){const o=Object.assign({},a);for(const d in b){const x=o[d],y=b[d];if(!x||(y.savedAt||'')>(x.savedAt||''))o[d]=y;}return o;}
 function entLoadLocal(){
-  try{const j=entNorm(JSON.parse(ls(AE.ls)||'null'));if(j)return j;}catch(e){}
-  // 더 이전 형식(이 기기에만 저장하던 입고 수량·패키지명)
-  const o={qty:{},pkg:null},t=nowIso();
-  try{const q=JSON.parse(ls(LSQ)||'{}')||{};for(const k in q)if(+q[k]>0)o.qty[k]=[+q[k],t];}catch(e){}
-  const p=ls('clv_ably_pkg_'+BRAND);if(p)o.pkg=[p,t];
-  return entNorm(o);
+  let j=null;try{j=JSON.parse(ls(AE.ls)||'null');}catch(e){}
+  let o=entNorm(j);
+  if(!o){const q={qty:{},pkg:null},t=nowIso();try{const m=JSON.parse(ls(LSQ)||'{}')||{};for(const k in m)if(+m[k]>0)q.qty[k]=[+m[k],t];}catch(e){}const p=ls('clv_ably_pkg_'+BRAND);if(p)q.pkg=[p,t];o=entNorm(q);}
+  A.entries=o||{};
 }
-function entSaveLocal(){ls(AE.ls,JSON.stringify(E));}
-function touch(){E.t=nowIso();eDirty=true;entSaveLocal();aStatus();}
-function entTake(r){E=r;entSaveLocal();eDirty=false;renderIn();renderStock();}
-async function entLoadRemote(){let j=null;if(S.token){const g=await ghGetPath(AE.path);eSha=g.sha;j=g.json;}else{try{const r=await fetch(AE.url+'?t='+Date.now(),{cache:'no-store'});if(r.ok)j=await r.json();}catch(e){}}if(!j)return null;try{return entNorm(await decJson(j,S.pw));}catch(e){throw new Error('저장된 입고 목록을 열지 못했습니다 (비밀번호가 다른 기기에서 저장된 것일 수 있음)');}}
-async function entSync(){try{const r=await entLoadRemote();if(r&&(r.t||'')>(E.t||''))entTake(r);else if(S.token&&E.lines.length&&(!r||(E.t||'')>(r.t||'')))eDirty=true;}catch(e){toast(e.message||String(e),4000);}aStatus();}
+function entSaveLocal(){for(const d in A.entries)if(!A.entries[d].savedAt&&!hasEnt(A.entries[d]))delete A.entries[d];ls(AE.ls,JSON.stringify({v:2,entries:A.entries}));}
+function touch(){const e=dayEnt();e.savedAt=nowIso();if(e.pack.lines.length)e.pack.t=e.savedAt;eDirty=true;entSaveLocal();status();}
+function setQty(o,v){const q=Math.max(0,Math.floor(+v||0));const e=dayEnt();if(q>0)e.items[o]=q;else delete e.items[o];touch();}
+function lastShip(o){let best=null;for(const d in A.entries){if(d===S.date)continue;const q=A.entries[d].items&&A.entries[d].items[o];if(q&&(!best||d>best.date))best={date:d,qty:q};}return best;}
+// 출고 입력 줄 = {oNo, qty, x(옵션)} (옵션 자료에 없는 번호는 뺌)
+function lines(){const c=cur();return Object.keys(c).map(o=>({oNo:o,qty:+c[o]||0,x:BO.get(String(o))||null})).filter(l=>l.qty>0&&l.x);}
+async function entLoadRemote(){let j=null;if(S.token){const g=await ghGetPath(AE.path);eSha=g.sha;j=g.json;}else{try{const r=await fetch(AE.url+'?t='+Date.now(),{cache:'no-store'});if(r.ok)j=await r.json();}catch(e){}}if(!j)return null;try{return entNorm(await decJson(j,S.pw));}catch(e){throw new Error('저장된 입력분을 열지 못했습니다 (비밀번호가 다른 기기에서 저장된 것일 수 있음)');}}
+const localNewer=r=>Object.keys(A.entries).some(d=>hasEnt(A.entries[d])&&(!r||!r[d]||(A.entries[d].savedAt||'')>(r[d].savedAt||'')));
+async function entSync(){try{const r=await entLoadRemote();if(r){A.entries=merge(A.entries,r);entSaveLocal();}if(S.token&&localNewer(r))eDirty=true;render();}catch(e){toast(e.message||String(e),4000);}status();}
 async function entSave(){
-  if(!S.token){entSaveLocal();eDirty=false;aStatus();toast('이 기기에만 저장했습니다 (GitHub 미연결 · [GitHub 연결] 을 눌러 연결)',3500);return;}
-  const b=$('#aSave');b.disabled=true;b.textContent='저장 중…';
+  if(!S.token){entSaveLocal();eDirty=false;status();toast('이 기기에만 저장했습니다 (GitHub 미연결 · [GitHub 연결] 을 눌러 연결)',3500);return;}
+  const b=$('#bSave');b.disabled=true;b.textContent='저장 중…';
   try{
-    const g=await ghGetPath(AE.path);eSha=g.sha;
-    if(g.json){const r=entNorm(await decJson(g.json,S.pw));if(r&&(r.t||'')>(E.t||'')&&JSON.stringify(r.lines)!==JSON.stringify(E.lines)&&!confirm('다른 기기에서 더 나중에 저장한 입고 목록('+r.lines.length+'줄)이 있습니다.\n[확인] 이 기기 목록('+E.lines.length+'줄)으로 덮어쓰기\n[취소] 그 목록을 불러오기')){entTake(r);toast('다른 기기에서 저장한 입고 목록을 불러왔습니다',3000);return;}}
-    const put=async()=>{eSha=await ghPutPath(AE.path,await encJson(E,S.pw),eSha,`도착보장 입고 목록 (${CFG.label})`);};
-    try{await put();}catch(e){if(e.status===409||e.status===422){eSha=(await ghGetPath(AE.path)).sha;await put();}else throw e;}
-    entSaveLocal();eDirty=false;eSaved=new Date();toast('GitHub 에 저장했습니다');
+    const put=async()=>{eSha=await ghPutPath(AE.path,await encJson({v:2,entries:A.entries},S.pw),eSha,'도착보장 출고 입력 '+S.date+' ('+CFG.label+')');};
+    const pull=async()=>{const g=await ghGetPath(AE.path);eSha=g.sha;if(g.json){const r=entNorm(await decJson(g.json,S.pw));if(r)A.entries=merge(A.entries,r);}};
+    await pull();
+    try{await put();}catch(e){if(e.status===409||e.status===422){await pull();await put();}else throw e;}
+    entSaveLocal();eDirty=false;eSaved=new Date();render();toast('GitHub 에 저장했습니다');
   }catch(e){toast(e.message||String(e),4000);}
-  finally{b.disabled=false;b.textContent='저장';aStatus();}
+  finally{b.disabled=false;b.textContent='저장';status();}
 }
-function aStatus(){
-  const g=$('#aGh');g.textContent=S.token?'GitHub 연결됨 ✓':'GitHub 연결';g.classList.toggle('pri',false);
-  const sv=$('#aSave');sv.classList.toggle('pri',eDirty);
-  const hm=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
-  $('#aSt').textContent=eDirty?(S.token?'저장하지 않은 변경이 있습니다 · [저장] 을 누르면 다른 기기에도 보입니다':'이 기기에만 저장됩니다 · 다른 기기와 같이 보려면 [GitHub 연결]'):(S.token?(eSaved?'GitHub 에 저장됨 '+hm(eSaved):'GitHub 연결됨 · 다른 기기에서 저장한 입고 목록도 불러옵니다'):'GitHub 미연결 · 입고 목록은 이 기기에만 저장됩니다');
+function status(){
+  const st=$('#fSt'),gh=$('#bGh');if(!st)return;
+  gh.textContent=S.token?'GitHub 연결됨 ✓':'GitHub 연결';gh.title=S.token?'연결되어 있습니다. 누르면 토큰을 바꾸거나 연결을 해제할 수 있습니다':'GitHub 토큰을 넣으면 입력분이 다른 기기에서도 같이 보입니다';
+  if(eDirty){st.textContent=S.token?'저장 안 됨 · [저장] 을 누르면 GitHub 에 올라갑니다':'이 기기에만 저장됨 (GitHub 미연결 · [GitHub 연결] 을 눌러 연결)';st.className='st dirty';}
+  else{st.textContent=S.token?'GitHub 연결됨'+(eSaved?' · '+eSaved.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})+' 저장':''):'GitHub 미연결 · 입력분은 이 기기에만 남습니다 ([GitHub 연결] 을 눌러 연결)';st.className='st';}
+  const L=lines();$('#fSum').textContent=fmt(L.length)+'건 · '+fmt(L.reduce((a,l)=>a+l.qty,0))+'개';
 }
+const aStatus=status;
+function hist(){const sel=$('#hist');const ds=Object.keys(A.entries).filter(d=>hasEnt(A.entries[d])||d===S.date).sort().reverse();sel.innerHTML='<option value="">(선택)</option>'+ds.map(d=>{const e=A.entries[d].items||{};const n=Object.keys(e).length,s=Object.values(e).reduce((a,b)=>a+(+b||0),0),m=(A.entries[d].pack&&A.entries[d].pack.lines||[]).length;return '<option value="'+d+'"'+(d===S.date?' selected':'')+'>'+d+' · '+n+'건 '+fmt(s)+'개'+(m?' · 목록 '+m+'줄':'')+'</option>';}).join('');}
+function resetDay(){const e=A.entries[S.date],n=Object.keys((e&&e.items)||{}).length,m=(e&&e.pack&&e.pack.lines||[]).length;if(!n&&!m)return toast(S.date+' 에는 지울 입력이 없습니다');
+  if(!confirm(S.date+' 입력을 모두 지울까요?\n\n· 출고 입력 '+n+'건\n· 입고신청 목록 '+m+'줄\n\n'+(S.token?'[저장] 을 누르면 다른 기기에서도 지워집니다.':'GitHub 미연결이라 이 기기에서만 지워집니다.')))return;
+  // 비운 날짜도 남겨 둠 (지우면 GitHub 에 남은 예전 입력이 다시 합쳐져 되살아남)
+  A.entries[S.date]={savedAt:nowIso(),items:{},pack:{lines:[],t:''}};eDirty=true;entSaveLocal();render();toast(S.date+' 입력을 모두 지웠습니다'+(S.token?' · [저장] 을 눌러 주세요':''),4000);}
+function render(){header();kpi();kShip();hist();renderSet();renderStock();renderIn();status();$('#date').value=S.date;$('#uDate').value=S.date;}
 
 async function open(pw){
   const r=await fetch(CFG.dataUrl+'?t='+Date.now(),{cache:'no-store'});
@@ -263,8 +307,8 @@ async function start(pw,remember){
     try{const o=JSON.parse(ls(LSO)||'{}');['base','days','tab'].forEach(k=>{if(o[k])D[k]=o[k];});}catch(e){}
     S.pw=pw;
     $('#fBase').value=D.base;$('#fDays').value=D.days;
-    buildIndex();aOpts();E=entLoadLocal()||{lines:[],t:''};entSaveLocal();
-    header();kpi();renderSet();renderStock();renderIn();setTab(D.tab);aStatus();
+    buildIndex();aOpts();entLoadLocal();entSaveLocal();
+    render();setTab(D.tab);
     entSync();
   }catch(e){$('#loginErr').textContent=e.message||String(e);if(/비밀번호/.test(e.message||''))ls('clv_pw',null);}
   finally{btn.disabled=false;btn.textContent='열기';}
@@ -291,7 +335,7 @@ function kpi(){
   $('#kIssueS').textContent='켜지 않은 진열 옵션 '+fmt(m)+'개';
   const tc=$('#tcSet');tc.textContent=n;tc.classList.toggle('bad',n>0);
 }
-function setTab(t){if(!['set','stock','can','in'].includes(t))t='set';D.tab=t;document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));$('#tabSet').hidden=t!=='set';$('#tabStock').hidden=t!=='stock';$('#tabIn').hidden=t!=='in';$('#tabCan').hidden=t!=='can';if(t==='stock'&&D.doc)renderStock();if(t==='can'&&D.doc)renderCan();saveOpt();}
+function setTab(t){if(!['set','stock','can','in'].includes(t))t='set';D.tab=t;document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));$('#tabSet').hidden=t!=='set';$('#tabStock').hidden=t!=='stock';$('#tabIn').hidden=t!=='in';$('#tabCan').hidden=t!=='can';if(t==='stock'&&D.doc)renderStock();if(t==='can'&&D.doc)renderCan();if(t==='in'&&D.doc)renderIn();const ft=$('#foot');if(ft){ft.hidden=t==='set';document.body.classList.toggle('nofoot',t==='set');}saveOpt();}
 function saveOpt(){ls(LSO,JSON.stringify({base:D.base,days:D.days,tab:D.tab}));}
 function copyBtn(v){return v?'<button type="button" class="copy" data-copy="'+esc(v)+'" title="복사">복사</button>':'';}
 
@@ -339,7 +383,7 @@ const COLS=[
  {k:'d7',l:'최근 7일',s:'일별',c:'l',v:x=>x.s7},
  {k:'$s',l:'기간 판매',s:'판매 기준',v:(x,c)=>c.s},
  {k:'$avg',l:'일평균',v:(x,c)=>c.avg},
- {k:'$qty',l:'입고 수량',s:'직접 입력',c:'q',v:x=>+(D.qty[x.oNo]||0)},
+ {k:'$qty',l:'출고 입력',s:'출고 일자 기준',c:'q',v:x=>+(D.qty[x.oNo]||0)},
  {k:'$left',l:'남은 일수',s:'판매 가능 ÷ 일평균',v:(x,c)=>c.left==null?1e9:c.left},
  {k:'$rec',l:'권장 입고',s:'목표 일수 기준',v:(x,c)=>c.rec},
  {k:'$can',l:'보낼 수 있음',s:'셀메 창고 − 미발송',v:(x,c)=>c.can},
@@ -469,18 +513,18 @@ function hsAttach(w){if(w.dataset.hs||w.closest('[data-nohs]'))return;w.dataset.
   w._hsUpd=upd;if(window.ResizeObserver){const ro=new ResizeObserver(()=>upd());ro.observe(w);const t=w.querySelector('table');if(t)ro.observe(t);}upd();}
 function hsAuto(){const scan=()=>document.querySelectorAll('.wrap').forEach(hsAttach);scan();new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});window.addEventListener('resize',()=>document.querySelectorAll('.wrap').forEach(w=>w._hsUpd&&w._hsUpd()));}
 hsAuto();
-const CMA=CMX('ab',{btn:'#cmA',table:'#stbl',title:()=>'재고·입고',onChange:()=>renderStock()});
+const CMA=CMX('ab',{btn:'#cmA',table:'#stbl',title:()=>'재고·출고',onChange:()=>renderStock()});
 // ---- 복수 선택 드롭다운 (조건 · 계절 · 연도, 직진 대시보드와 같은 모양) ----
 const MS={};
 function msInit(id,opts,set,onChange){const el=$('#'+id),pan=el.querySelector('.msp');MS[id]={el,opts,set,onChange};pan.innerHTML=`<div class="msx"><span>여러 개를 함께 고를 수 있습니다</span><button type="button" data-clear>모두 해제</button></div>`+opts.map(([k,l])=>`<label><input type="checkbox" value="${esc(k)}"${set.has(k)?' checked':''}> ${esc(l)}</label>`).join('');msLabel(id);}
 function msLabel(id){const {el,opts,set}=MS[id];const btn=el.querySelector('.msb'),t=el.dataset.title;const names=opts.filter(([k])=>set.has(k)).map(([,l])=>l.replace(/ \(.*\)$/,''));btn.innerHTML=set.size?`${esc(t)}: <b>${esc(names.join(' + '))}</b>`:`${esc(t)}: 전체`;btn.title=set.size?names.join(' + '):t+' 전체';el.classList.toggle('sel',set.size>0);el.querySelectorAll('.msp label').forEach(l=>{const c=l.querySelector('input');c.checked=set.has(c.value);l.classList.toggle('on',c.checked);});}
 function msSet(id,keys){const m=MS[id];m.set.clear();(keys||[]).forEach(k=>m.set.add(k));msLabel(id);}
 // 조건: 재고 상태끼리는 "또는", 나머지는 모두 만족하는 것만
-const AFL=[['need','입고 필요 (권장 입고 > 0)'],['sale','최근 7일 팔린 것'],['in','입고 수량 적은 것'],['soon','남은 일수 3일 이하'],['avail0','판매 가능 0'],['issue','세팅 점검 필요'],['nobc','입고 바코드 없음'],['new','최근 7일 추가 (NEW)']];
+const AFL=[['need','입고 필요 (권장 입고 > 0)'],['sale','최근 7일 팔린 것'],['in','출고 입력한 것만'],['soon','남은 일수 3일 이하'],['avail0','판매 가능 0'],['issue','세팅 점검 필요'],['nobc','입고 바코드 없음'],['new','최근 7일 추가 (NEW)']];
 function aOpts(){const ST=['정상','품절 임박','품절','미입고 품절'],sts=new Set(),ss=new Set(),ys=new Set();D.items.forEach(x=>{if(x.st)sts.add(x.st);if(x.sea)ss.add(x.sea);if(x.yr)ys.add(x.yr);});
   const stl=[...sts].sort((a,b)=>(ST.indexOf(a)+1||99)-(ST.indexOf(b)+1||99)).map(v=>['st:'+v,'재고 상태: '+v]);
   const order=['봄','여름','가을','겨울','사계절'],sl=[...ss].sort((a,b)=>(order.indexOf(a)+1||99)-(order.indexOf(b)+1||99)||a.localeCompare(b,'ko'));
-  msInit('msFilter',AFL.concat(stl),D.cond,()=>{D.inOnly=D.cond.has('in');renderStock();kIn();});
+  msInit('msFilter',AFL.concat(stl),D.cond,()=>{D.inOnly=D.cond.has('in');renderStock();kShip();});
   msInit('msSeason',sl.map(v=>[v,v]),D.seas,renderStock);msInit('msYear',[...ys].sort().reverse().map(v=>[v,v]),D.yrs,renderStock);
   $('#msSeason').hidden=!ss.size;$('#msYear').hidden=!ys.size;}
 function view(skip,nosort){
@@ -506,7 +550,7 @@ function view(skip,nosort){
 }
 function renderStock(){
   $('#sth').innerHTML=CMA.head('<tr>'+COLS.map(c=>'<th class="'+(c.c||'')+(D.sort===c.k?' on':'')+'" data-k="'+c.k+'">'+ACF.btn(AMAP[c.k])+esc(c.l)+(D.sort===c.k?(D.dir>0?' ▲':' ▼'):'')+(c.s?'<small>'+esc(c.s)+'</small>':'')+'</th>').join('')+'</tr>');
-  D.qty=inQty();
+  D.qty=cur();
   const V=view();
   $('#aShown').textContent=fmt(V.length)+' / '+fmt(D.items.length)+' 옵션';const so=$('#fSort');if(so)so.value=[...so.options].some(o=>o.value===D.sort)?D.sort:'';
   $('#tcStock').textContent=D.items.filter(x=>calc(x).rec>0).length;
@@ -534,17 +578,17 @@ const canOk=x=>x.smAvail!=null&&+x.smAvail>=CN.th;
 function canView(){const q=CN.q.trim().toLowerCase();
   let V=D.items.filter(canOk).map(x=>({x,c:calc(x)}));
   if(q)V=V.filter(({x})=>[x.code,x.name,x.opt,x.bc,x.sol,x.ibc,x.oNo].some(v=>v&&String(v).toLowerCase().includes(q)));
-  if(CN.not)V=V.filter(({x})=>!(+(D.qty||{})[x.oNo]>0));
+  if(CN.not)V=V.filter(({x})=>!(+(cur()[x.oNo]||0)>0));
   const L=it=>it.c.left==null?1e9:it.c.left;
   const S={sm:(a,b)=>b.x.smAvail-a.x.smAvail,rec:(a,b)=>(b.c.rec||0)-(a.c.rec||0),left:(a,b)=>L(a)-L(b),d7:(a,b)=>(b.x.s7||0)-(a.x.s7||0),avail:(a,b)=>(a.x.avail||0)-(b.x.avail||0),name:(a,b)=>String(a.x.name||'').localeCompare(String(b.x.name||''),'ko')||String(a.x.opt||'').localeCompare(String(b.x.opt||''),'ko')};
   V.sort((a,b)=>(S[CN.sort]||S.sm)(a,b)||(b.x.smAvail-a.x.smAvail));return V;}
-const CCOLS=[['code','품번','c1 l'],['name','상품명 · 옵션','l'],['bc','바코드','l','솔루션사 코드'],['st','재고 상태','l'],['sm','셀메 가용재고','','셀메이트'],['can','보낼 수 있음','','셀메 창고 − 미발송'],['avail','판매 가능','','에이블리'],['inc','입고 예정'],['d7','최근 7일','','판매 합계'],['left','남은 일수'],['rec','권장 입고','','목표 일수 기준'],['qty','입고 수량','','입고 목록']];
+const CCOLS=[['code','품번','c1 l'],['name','상품명 · 옵션','l'],['bc','바코드','l','솔루션사 코드'],['st','재고 상태','l'],['sm','셀메 가용재고','','셀메이트'],['can','보낼 수 있음','','셀메 창고 − 미발송'],['avail','판매 가능','','에이블리'],['inc','입고 예정'],['d7','최근 7일','','판매 합계'],['left','남은 일수'],['rec','권장 입고','','목표 일수 기준'],['qty','출고 입력','','출고 일자']];
 const CSORT={sm:'sm',rec:'rec',left:'left',d7:'d7',avail:'avail',name:'name'};
 function renderCan(){if(!D.items||!$('#tcCan'))return;$('#tcCan').textContent=fmt(D.items.filter(canOk).length);
   if(D.tab!=='can')return;
   const V=canView();
   $('#cth').innerHTML=CMC.head('<tr>'+CCOLS.map(([k,l,c,sub])=>'<th class="'+(c||'')+(CSORT[k]===CN.sort?' on':'')+'" data-k="'+k+'">'+esc(l)+(CSORT[k]===CN.sort?(k==='left'||k==='avail'||k==='name'?' ▲':' ▼'):'')+(sub?'<small>'+esc(sub)+'</small>':'')+'</th>').join('')+'</tr>');
-  $('#ctb').innerHTML=CMC.rows(V.map(({x,c})=>{const nw=isNew(x),q=+(D.qty||{})[x.oNo]||0;const leftCls=c.left==null?'zero':c.left<=3?'hot':c.left<=6?'warm':'';const stCls='st-'+String(x.st||'').split(' ')[0];
+  $('#ctb').innerHTML=CMC.rows(V.map(({x,c})=>{const nw=isNew(x),q=+(cur()[x.oNo]||0)||0;const leftCls=c.left==null?'zero':c.left<=3?'hot':c.left<=6?'warm':'';const stCls='st-'+String(x.st||'').split(' ')[0];
    return '<tr'+(nw?' class="isnew"':'')+'><td class="c1 l"><b class="mono">'+esc(x.code||'-')+'</b></td>'
    +'<td class="nm">'+(nw?'<span class="newb" title="'+esc(x.added)+' 에 처음 확인한 옵션">NEW '+esc(addedTxt(x).slice(0,5))+'</span>':'')+esc(x.name)+'<small>'+esc(x.opt)+'</small></td>'
    +'<td class="l mono">'+(inBc(x)?esc(inBc(x)):'<span class="zero">-</span>')+'</td>'
@@ -559,38 +603,31 @@ function renderCan(){if(!D.items||!$('#tcCan'))return;$('#tcCan').textContent=fm
   const tot=D.items.filter(canOk).length,sum=V.reduce((a,{x})=>a+(+x.smAvail||0),0);
   $('#canShown').textContent=fmt(V.length)+' / '+fmt(tot)+' 옵션 · 셀메 가용재고 합 '+fmt(sum);
   const F=D.doc.files||{},smt=F.sellmate_stock&&F.sellmate_stock.time;
-  $('#canNote').innerHTML='도착보장 옵션 '+fmt(D.items.length)+'개 중 셀메이트 가용재고가 '+fmt(CN.th)+'개 이상인 옵션 '+fmt(tot)+'개입니다'+(smt?' (셀메 재고 '+esc(smt)+' 기준)':'')+'. 셀메 가용재고는 셀메이트 화면의 가용재고이고, 보낼 수 있음은 SJ_기본창고 재고에서 미발송 주문을 뺀 수량이라 더 적을 수 있습니다. 입고 수량은 입고신청 탭 목록에 적힌 수량입니다. 기준 수량은 이 브라우저에 기억됩니다.';
+  $('#canNote').innerHTML='도착보장 옵션 '+fmt(D.items.length)+'개 중 셀메이트 가용재고가 '+fmt(CN.th)+'개 이상인 옵션 '+fmt(tot)+'개입니다'+(smt?' (셀메 재고 '+esc(smt)+' 기준)':'')+'. 셀메 가용재고는 셀메이트 화면의 가용재고이고, 보낼 수 있음은 SJ_기본창고 재고에서 미발송 주문을 뺀 수량이라 더 적을 수 있습니다. 출고 입력은 재고 · 출고 탭에서 출고 일자에 적은 수량입니다. 기준 수량은 이 브라우저에 기억됩니다.';
 }
 async function dlCan(){const V=canView();if(!V.length)return toast('표에 보이는 옵션이 없습니다');await loadXLSX();
-  const H=['품번','상품명','옵션','바코드','재고 상태','셀메 가용재고','보낼 수 있음','판매 가능','입고 예정','최근 7일','남은 일수','권장 입고','입고 수량','추가일','옵션 번호'];
+  const H=['품번','상품명','옵션','바코드','재고 상태','셀메 가용재고','보낼 수 있음','판매 가능','입고 예정','최근 7일','남은 일수','권장 입고','출고 입력','추가일','옵션 번호'];
   const n=v=>v==null||v===''||isNaN(v)?'':+v;
-  const R=V.map(({x,c})=>[x.code||'',x.name||'',x.opt||'',inBc(x)||'',x.st||'',n(x.smAvail),n(c.can),n(x.avail),n(x.inc),n(x.s7),c.left==null?'':Math.round(c.left*10)/10,n(c.rec),+(D.qty||{})[x.oNo]||'',x.added||'',x.oNo||'']);
+  const R=V.map(({x,c})=>[x.code||'',x.name||'',x.opt||'',inBc(x)||'',x.st||'',n(x.smAvail),n(c.can),n(x.avail),n(x.inc),n(x.s7),c.left==null?'':Math.round(c.left*10)/10,n(c.rec),+(cur()[x.oNo]||0)||'',x.added||'',x.oNo||'']);
   const ws=XLSX.utils.aoa_to_sheet([H].concat(R));ws['!cols']=[14,40,22,16,10,10,10,8,8,8,8,8,8,16,12].map(w=>({wch:w}));ws['!autofilter']={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:R.length,c:H.length-1}})};
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'입고 가능');
   const t=new Date(),hm=String(t.getHours()).padStart(2,'0')+String(t.getMinutes()).padStart(2,'0');XLSX.writeFile(wb,todayKst().replace(/-/g,'')+'_'+CFG.label+'_도착보장_입고가능_셀메'+CN.th+'이상_'+V.length+'옵션_'+hm+'.xlsx');toast('입고 가능 '+fmt(V.length)+'옵션을 엑셀로 내려받았습니다');}
-// 재고 탭 입고 수량 칸 = 입고신청 목록에서 이 옵션 줄의 수량. 적으면 목록 줄을 고치거나 끝에 더함
-function optLines(o){const I=[];E.lines.forEach((l,i)=>{const h=look(l[1]);if(h&&h.length===1&&h[0].oNo===o)I.push(i);});return I;}
-function qtyCell(x,q){const I=optLines(x.oNo),multi=I.length>1;
-  return '<td class="q'+(q?' has':'')+'"><input type="number" min="0" step="1" inputmode="numeric" value="'+(q?esc(q):'')+'"'+(multi?' readonly title="여러 줄('+I.map(i=>i+1).join(', ')+'번)에 나뉘어 있습니다. 입고신청 탭에서 고쳐 주세요"':inBc(x)?' title="적은 수량은 입고신청 탭 목록에 같이 들어갑니다"':' disabled title="입고 바코드(솔루션사 코드)가 없어 입고 목록에 넣을 수 없습니다"')+' aria-label="입고 수량"></td>';}
-function setOptQty(x,v){const I=optLines(x.oNo);
-  if(I.length>1){toast('이 옵션은 입고신청 목록 여러 줄에 나뉘어 있습니다. 입고신청 탭에서 고쳐 주세요',4000);return false;}
-  if(I.length===1){const i=I[0];if(v>0)E.lines[i][2]=v;else{const p=String(E.lines[i][0]||'').trim();if(p&&E.lines[i+1]&&!String(E.lines[i+1][0]||'').trim())E.lines[i+1][0]=p;E.lines.splice(i,1);}}
-  else if(v>0){if(!inBc(x)){toast('입고 바코드(솔루션사 코드)가 없어 입고 목록에 넣을 수 없습니다',4000);return false;}E.lines.push(['',inBc(x),v]);}
-  else return true;
-  touch();return true;}
-function qtyNote(){const L=D.items.filter(x=>+D.qty[x.oNo]>0);$('#qtyNote').textContent=L.length?'입고 목록 '+fmt(L.length)+'옵션 · '+fmt(L.reduce((a,x)=>a+(+D.qty[x.oNo]),0))+'개 · 여기 적은 수량은 입고신청 탭 목록에 같이 들어가고, 순서 · 패키지는 입고신청 탭에서 고칩니다':'입고 수량 칸에 적거나, 입고신청 탭에서 바코드를 넣는 순서대로 적을 수 있습니다';}
+// 재고 탭 출고 입력 칸 = 출고 일자별 옵션 수량 (직진 대시보드의 출고 입력과 같음). 입고신청 탭 목록과는 따로 저장되고, 셀메 등록 .xls 는 이 수량으로 만듦
+function qtyCell(x,q){const p=lastShip(x.oNo);
+  return '<td class="q'+(q?' has':'')+'"><input type="number" min="0" step="1" inputmode="numeric" value="'+(q?esc(q):'')+'" title="'+esc(S.date)+' 출고 수량 · 셀메 등록 .xls 와 입고신청 .xlsx(목록이 비었을 때)에 들어갑니다" aria-label="출고 수량">'+(p?'<small>전 '+esc(p.date.slice(5).replace('-','/'))+' '+fmt(p.qty)+'개</small>':'')+'</td>';}
+function qtyNote(){const L=lines();$('#qtyNote').textContent=L.length?S.date+' 출고 입력 '+fmt(L.length)+'옵션 · '+fmt(L.reduce((a,l)=>a+l.qty,0))+'개 · 아래 [셀메 등록 .xls] 는 이 수량으로, [입고신청 .xlsx] 는 입고신청 탭 목록(비어 있으면 이 수량을 한 패키지로)으로 만들어집니다':'출고 수량을 적으면 출고 일자별로 남고, 아래 단추로 셀메 등록 · 입고신청 파일을 내려받습니다';}
 
 // ---- 입고신청 목록: 패키지명 · 바코드 · 수량을 적은 순서 그대로 엑셀에 들어감. 바코드로 도착보장 옵션을 찾아 SKU · 상품명 · 옵션을 채움(VLOOKUP) ----
 const nb=s=>String(s==null?'':s).trim().toUpperCase();
-let BC=new Map();
+let BC=new Map(),BO=new Map();
 function buildIndex(){
-  BC=new Map();
+  BC=new Map();BO=new Map();D.items.forEach(x=>BO.set(String(x.oNo),x));
   D.items.forEach(x=>{const k=nb(inBc(x));if(!k)return;const a=BC.get(k);if(!a)BC.set(k,[x]);else if(!a.includes(x))a.push(x);});
   // 입고 바코드로 못 찾을 때만 3PL 바코드 · 셀메 바코드로
   const sec=new Map();D.items.forEach(x=>[x.bc,x.smBc,x.sol].forEach(v=>{const k=nb(v);if(k&&!BC.has(k)&&!sec.has(k))sec.set(k,x);}));sec.forEach((x,k)=>BC.set(k,[x]));
 }
 const look=b=>{const k=nb(b);return k?(BC.get(k)||[]):null;};
-const defPkg=()=>todayKst().slice(5).replace('-','')+'(1)';
+const defPkg=()=>S.date.slice(5,7)+S.date.slice(8,10)+'(1)';
 function pkgOf(i){for(let j=Math.min(i,E.lines.length-1);j>=0;j--){const p=String(E.lines[j][0]||'').trim();if(p)return p;}return defPkg();}
 function lineInfo(i){
   const l=E.lines[i],hits=look(l[1]),q=+l[2]||0,p=pkgOf(i);
@@ -611,12 +648,13 @@ function inRows(){const out=[],at=new Map();E.lines.forEach((l,i)=>{const f=line
 function inQty(){const m={};inRows().forEach(r=>{m[r.x.oNo]=(m[r.x.oNo]||0)+r.q;});return m;}
 function inBad(){const B=[];E.lines.forEach((l,i)=>{const f=lineInfo(i);if(f.cls==='ng')B.push({i,f});});return B;}
 function cellsHtml(f){
-  if(!f)return '<td></td><td></td><td></td><td></td><td></td>';
-  const x=f.x,c=x?calc(x):null;
+  if(!f)return '<td></td><td></td><td></td><td></td><td></td><td></td>';
+  const x=f.x,c=x?calc(x):null,sh=x?(+cur()[x.oNo]||0):0;
   return '<td class="l mono">'+(x?esc(x.sku):'')+'</td>'
    +'<td class="nm">'+(x?esc(x.name)+'<small>'+esc(x.opt)+' · <span class="mono">'+esc(x.code||'')+'</span></small>':'')+'</td>'
    +'<td>'+(x?fmt(x.avail)+(x.inc?'<small>예정 '+fmt(x.inc)+'</small>':''):'')+'</td>'
    +'<td>'+(x&&c.can!=null?(c.can<f.q?'<span class="warm">'+fmt(c.can)+'</span>':fmt(c.can)):'')+'</td>'
+   +'<td>'+(x?(sh?fmt(sh):'<span class="zero">-</span>'):'')+'</td>'
    +'<td class="l '+f.cls+'">'+esc(f.st)+'</td>';
 }
 const DEL='<button type="button" class="del" title="이 줄 지우기" aria-label="이 줄 지우기">×</button>';
@@ -634,7 +672,7 @@ function refreshIn(){
   document.querySelectorAll('#inb tr').forEach(tr=>{
     const i=+tr.dataset.i,blank=i>=E.lines.length;
     const t=document.createElement('tbody');t.innerHTML='<tr>'+cellsHtml(blank?null:lineInfo(i))+'</tr>';
-    const nc=[...t.firstChild.children];for(let k=0;k<5;k++)tr.replaceChild(nc[k],tr.children[4+k]);
+    const nc=[...t.firstChild.children];for(let k=0;k<6;k++)tr.replaceChild(nc[k],tr.children[4+k]);
     tr.classList.toggle('pk',!blank&&i>0&&pkgOf(i)!==pkgOf(i-1));tr.classList.toggle('blank',blank);
     tr.children[0].textContent=blank?'':i+1;tr.querySelector('[data-f="0"]').placeholder=pkgOf(blank?E.lines.length-1:i);
   });
@@ -643,16 +681,19 @@ function refreshIn(){
 function focusIn(i,f){const el=document.querySelector('#inb tr[data-i="'+i+'"] [data-f="'+f+'"]');if(el){el.focus();try{el.select();}catch(e){}}}
 function inNote(){
   const R=inRows(),B=inBad();
-  $('#inNote').innerHTML=R.length?'패키지 '+new Set(R.map(r=>r.p)).size+'개 · '+fmt(R.length)+'줄 · '+fmt(R.reduce((a,r)=>a+r.q,0))+'개'+(B.length?' · <span class="ng">확인 필요 '+B.length+'줄</span>':''):'바코드와 수량을 적은 줄이 순서대로 엑셀에 들어갑니다';
+  $('#inNote').innerHTML=R.length?'패키지 '+new Set(R.map(r=>r.p)).size+'개 · '+fmt(R.length)+'줄 · '+fmt(R.reduce((a,r)=>a+r.q,0))+'개'+(B.length?' · <span class="ng">확인 필요 '+B.length+'줄</span>':''):'패키징 파일을 불러오거나 바코드 · 수량을 적으면 그 순서대로 엑셀에 들어갑니다';
   $('#tcIn').textContent=R.length;
-  kIn(R,B);
+  // 같은 날짜의 출고 입력(셀메 등록)과 비교
+  const tot={};R.forEach(r=>{tot[r.x.oNo]=(tot[r.x.oNo]||0)+r.q;});const c=cur(),diff=Object.keys(tot).filter(o=>(+c[o]||0)!==tot[o]),miss=Object.keys(c).filter(o=>+c[o]>0&&!tot[o]);const nm=o=>{const x=BO.get(String(o));return x?esc(x.code||x.name)+' '+esc(x.opt||''):esc(o);};
+  $('#uCmp').innerHTML=!R.length?'':!Object.keys(c).length?S.date+' 에는 재고 · 출고 탭의 출고 입력이 없어 셀메 등록 수량과 비교하지 않았습니다.':(diff.length||miss.length?'<b class="warm">출고 입력(셀메 등록)과 다른 곳</b> · 수량이 다른 옵션 '+diff.length+'개'+(diff.length?' ('+diff.slice(0,5).map(o=>nm(o)+' 목록 '+fmt(tot[o])+' / 출고 입력 '+fmt(+c[o]||0)).join(', ')+(diff.length>5?' …':'')+')':'')+' · 목록에 없는 출고 입력 '+miss.length+'개'+(miss.length?' ('+miss.slice(0,5).map(nm).join(', ')+(miss.length>5?' …':'')+')':'')+'. 패키징 파일 기준으로 올려도 되는지 확인해 주세요.':'<span class="ok">✓</span> 재고 · 출고 탭의 출고 입력(셀메 등록)과 옵션 · 수량이 모두 같습니다.');
 }
-// 입고 입력 카드 = 입고신청 목록 전체 합계 (옵션별로 합침). 누르면 그 옵션만 재고 표에 보임
-function kIn(R,B){R=R||inRows();B=B||inBad();const opt=new Set(R.map(r=>r.x.oNo)),q=R.reduce((a,r)=>a+r.q,0);
-  $('#kIn').textContent=opt.size?fmt(opt.size)+'옵션 · '+fmt(q)+'개':'없음';
-  $('#kInS').innerHTML=opt.size?'패키지 '+fmt(new Set(R.map(r=>r.p)).size)+'개'+(B.length?' · <span class="ng">확인 필요 '+B.length+'줄</span>':'')+(D.inOnly?' · 지금 이 옵션만 보는 중':' · 누르면 이 옵션만'):'재고 탭 입고 수량 칸이나 입고신청 탭에 적으면 여기 합계가 나옵니다';
+// 출고 입력 카드 = 출고 일자의 출고 입력 합계. 누르면 입력한 옵션만 재고 표에 보임
+function kShip(){const L=lines(),q=L.reduce((a,l)=>a+l.qty,0),e=A.entries[S.date];
+  $('#kDateLbl').textContent=S.date.slice(5).replace('-','/');
+  $('#kIn').textContent=L.length?fmt(L.length)+'건 · '+fmt(q)+'개':'없음';
+  $('#kInS').innerHTML=(e&&e.savedAt?'마지막 입력 '+new Date(e.savedAt).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'입력 없음')+(D.inOnly?' · 지금 입력한 옵션만 보는 중':L.length?' · 누르면 입력한 옵션만':'');
   $('#kInC').classList.toggle('on',D.inOnly);}
-function setInOnly(on){D.inOnly=on;if(on)D.cond.add('in');else D.cond.delete('in');if(MS.msFilter)msLabel('msFilter');if(on&&D.tab!=='stock')setTab('stock');renderStock();kIn();}
+function setInOnly(on){D.inOnly=on;if(on)D.cond.add('in');else D.cond.delete('in');if(MS.msFilter)msLabel('msFilter');if(on&&D.tab!=='stock')setTab('stock');renderStock();kShip();}
 function inChanged(){touch();refreshIn();}
 
 function loadXLSX(){return window.XLSX?Promise.resolve():new Promise((res,rej)=>{const s=document.createElement('script');s.src=CFG.xlsx;s.onload=res;s.onerror=()=>rej(new Error('엑셀 라이브러리를 불러오지 못했습니다 (인터넷 연결 확인)'));document.head.appendChild(s);});}
@@ -662,8 +703,9 @@ const IN_TPL=['ABLY 도착보장','확인해주세요!',
   "* 1개의 패키지(박스, 대봉)에 함께 포장하여 입고할 SKU에는 동일한 패키지명을 반드시 입력해 주세요. (필수 항목)\n*  입력하신 패키지명을 기준으로 패키지가 생성됩니다. (예: 패키지명을 3개 입력할 경우 입고 패키지 3개 생성)\n * 동일한 패키지명으로 입력된 SKU는 반드시 하나의 박스(또는 대봉)에 함께 포장하여 입고해 주셔야 합니다.\n*  패키지명은 한글, 영문, 숫자 등 자유롭게 작성 가능하며, 이후 입고 신청 내역을 조회할 때 검색어로 활용할 수 있습니다.\n*  상품 바코드 번호는 입고 신청 완료 후에는 변경이 불가하오니, 입력 시 신중하게 확인해 주세요.\n*  이전에 입고된 이력이 있는 SKU의 경우, 기존에 등록·사용했던 상품 바코드 번호를 그대로 입력하셔야 합니다.\n*  입고 검품 방식으로 '프로'를 선택한 행은 상품 바코드 번호를 비워 주세요. 에이블리가 바코드를 발급하며, 이전에 입고한 이력이 있는 SKU는 기존 바코드가 그대로 사용됩니다.\n*  엑셀 파일은 2007 버전 이상으로 저장하여 업로드해 주세요. 이전 버전(.xls 등)으로 업로드 시 실패할 수 있습니다.",
   "*아래 항목은 모두 필수로 입력해주세요. 입력이 누락되었을 시 업로드에 실패합니다. (단, 입고 검품 방식이 '프로'인 행의 상품바코드번호는 비워 주세요.)"];
 async function dlIn(){
-  const L=inRows();if(!L.length)return toast('바코드와 수량을 적은 줄이 없습니다 (입고신청 탭)');
-  const B=inBad();
+  let L=inRows(),how='입고신청 탭 목록 순서',B=[];
+  if(L.length)B=inBad();
+  else{const sl=lines();if(!sl.length)return toast(S.date+' 에 출고 입력도, 입고신청 탭 목록도 없습니다');const nb0=sl.filter(l=>!inBc(l.x)).length;L=sl.filter(l=>inBc(l.x)).map(l=>({p:defPkg(),x:l.x,q:l.qty}));if(!L.length)return toast('출고 입력한 옵션에 입고 바코드(솔루션사 코드)가 없습니다');how='출고 입력 · 한 패키지 '+defPkg()+(nb0?' (바코드 없는 '+nb0+'옵션 제외)':'');}
   if(B.length&&!confirm('확인이 필요한 줄 '+B.length+'개는 빼고 내려받습니다 ('+B.slice(0,3).map(o=>(o.i+1)+'번 '+o.f.st).join(', ')+(B.length>3?' …':'')+'). 계속할까요?'))return;
   try{await loadXLSX();}catch(e){return toast(e.message,4000);}
   const insp=$('#insp').value;
@@ -676,27 +718,30 @@ async function dlIn(){
   ws['!rows']=[{},{},{hpt:150},{hpt:30}];
   // A~E 열(패키지명·SKU번호·바코드·상품명·옵션정보)은 공식 양식처럼 텍스트 셀
   R.forEach((r,i)=>{for(let c=0;c<5;c++){const a=XLSX.utils.encode_cell({r:5+i,c});if(ws[a]){ws[a].t='s';ws[a].v=String(ws[a].v);ws[a].z='@';}}});
-  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'시트1');XLSX.writeFile(wb,CFG.label+'_도착보장_입고신청_'+todayKst().replace(/-/g,'')+'.xlsx');
-  toast('입고신청 패키지 '+new Set(R.map(r=>r[0])).size+'개 · '+R.length+'줄 · '+fmt(R.reduce((a,r)=>a+r[5],0))+'개 내려받음 · 에이블리 엑셀 대량 입고 요청에 그대로 올리면 됩니다',4500);
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'시트1');XLSX.writeFile(wb,ymd(S.date)+'_'+CFG.label+'_도착보장_입고신청.xlsx');
+  toast('입고신청 패키지 '+new Set(R.map(r=>r[0])).size+'개 · '+R.length+'줄 · '+fmt(R.reduce((a,r)=>a+r[5],0))+'개 내려받음 ('+how+') · 에이블리 엑셀 대량 입고 요청에 그대로 올리면 됩니다',5000);
 }
-// 셀메이트 주문등록: 1-1 양식 열 (주문번호 · 바코드 · 상품명 · 옵션 · 수량 · 수령자 · 우편번호 · 주소). 입고 목록 순서대로 옵션별로 합침. 바코드는 셀메 바코드(입고 바코드가 셀메에 있으면 그것, 아니면 넣을 바코드)
+// 셀메 등록 .xls (2026-10-30, 직진 대시보드와 같은 양식): 출고 일자의 출고 입력 옵션별 수량. 주문번호 = 출고 일자, I 열 =NOW(). 바코드는 셀메 바코드(없으면 입고 바코드 · 넣을 바코드)
+// SheetJS 는 .xls 에 수식을 못 쓰므로 만든 뒤 I열 숫자 칸(NUMBER)을 수식 칸(FORMULA, NOW)으로 바꿈
+const xlNow=()=>{const t=new Date();return 25569+(t.getTime()-t.getTimezoneOffset()*60000)/864e5;};
+function xlsNowCol(buf,col){const cfb=XLSX.CFB.read(buf,{type:'array'});const e=XLSX.CFB.find(cfb,'Workbook')||XLSX.CFB.find(cfb,'Book');const d=e.content instanceof Uint8Array?e.content:new Uint8Array(e.content);const out=[];let p=0,n=0;while(p+4<=d.length){const t=d[p]|d[p+1]<<8,l=d[p+2]|d[p+3]<<8,r=d.subarray(p,p+4+l);if(t===0x203&&l===14&&(r[6]|r[7]<<8)===col&&(r[4]|r[5]<<8)>0){const f=new Uint8Array(29),v=new DataView(f.buffer);v.setUint16(0,6,true);v.setUint16(2,25,true);f.set(r.subarray(4,10),4);f.set(r.subarray(10,18),10);v.setUint16(18,3,true);v.setUint32(20,0,true);v.setUint16(24,3,true);f[26]=0x41;f[27]=0x4A;f[28]=0;out.push(f);n++;}else out.push(r);p+=4+l;}if(!n)throw new Error('NOW 칸을 찾지 못함');const nd=new Uint8Array(out.reduce((a,b)=>a+b.length,0));let o=0;out.forEach(a=>{nd.set(a,o);o+=a.length;});e.content=nd;e.size=nd.length;return XLSX.CFB.write(cfb,{type:'array',fileType:'cfb'});}
+function xlsSave(data,name){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'application/vnd.ms-excel'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);}
 async function dlSm(){
-  const M=new Map();inRows().forEach(r=>{const m=M.get(r.x.oNo);if(m)m.q+=r.q;else M.set(r.x.oNo,{x:r.x,q:r.q});});
-  const L=[...M.values()];if(!L.length)return toast('바코드와 수량을 적은 줄이 없습니다 (입고신청 탭)');
+  const L=lines();if(!L.length)return toast(S.date+' 에 입력한 출고 수량이 없습니다');
   try{await loadXLSX();}catch(e){return toast(e.message,4000);}
-  const no=todayKst().replace(/-/g,'');
-  // 주문번호는 엑셀 양식처럼 오늘 날짜(=TODAY()) 값
-  const t=todayKst().split('-').map(Number),day=new Date(t[0],t[1]-1,t[2]);
-  const H=['주문번호','바코드','상품명','옵션','수량','수령자','우편번호','주소'];
-  const t0=new Date(),nowV=25569+(t0.getTime()-t0.getTimezoneOffset()*60000)/864e5;
-  const R=L.map(({x,q})=>[day,x.smBc||inBc(x)||x.sug||'',x.name,x.smOpt||String(x.opt||'').replace(/ \/ /g,','),q,'','','',{t:'n',f:'NOW()',v:nowV,z:'m/d/yy h:mm'}]);
-  const miss=R.filter(r=>!r[1]).length;
-  const ws=XLSX.utils.aoa_to_sheet([H,...R],{cellDates:true,dateNF:'yyyy-mm-dd'});ws['!cols']=[{wch:10},{wch:20},{wch:50},{wch:18},{wch:8},{wch:10},{wch:10},{wch:30},{wch:15}];
-  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'셀메이트 주문등록');XLSX.writeFile(wb,CFG.label+'_도착보장_셀메주문등록_'+no+'.xlsx');
-  toast('셀메이트 주문등록 '+R.length+'옵션 내려받음'+(miss?' · 바코드 없는 행 '+miss+'개 확인 필요':''),miss?5000:3000);
+  const d=S.date,SH='1-1. 도착보장 셀메이트 등록 양식';
+  const aoa=[['주문번호','바코드','상품명','옵션','수량','수령자','우편번호','주소']].concat(L.map(l=>{const x=l.x;return [{t:'n',v:serial(d),z:'yyyymmdd'},x.smBc||inBc(x)||x.sug||'',x.name||'',x.smOpt||String(x.opt||'').replace(/ \/ /g,','),l.qty,'','','',{t:'n',v:xlNow(),z:'m/d/yy h:mm'}];}));
+  const miss=aoa.slice(1).filter(r=>!r[1]).length;
+  const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[{wch:11},{wch:19},{wch:60},{wch:22},{wch:7},{wch:9},{wch:9},{wch:20},{wch:15}];
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,SH);const name=ymd(d)+'_'+CFG.label+' 도착보장출고(셀메등록)';
+  try{const raw=XLSX.write(wb,{type:'array',bookType:'biff8'});xlsSave(xlsNowCol(new Uint8Array(raw),8),name+'.xls');}
+  catch(e){console.warn(e);for(let i=1;i<aoa.length;i++)aoa[i][8]={t:'n',f:'NOW()',v:xlNow(),z:'m/d/yy h:mm'};const w2=XLSX.utils.book_new();const s2=XLSX.utils.aoa_to_sheet(aoa);s2['!cols']=ws['!cols'];XLSX.utils.book_append_sheet(w2,s2,SH);XLSX.writeFile(w2,name+'.xlsx');}
+  toast('셀메 등록 파일 '+L.length+'행 내려받음'+(miss?' · 바코드 없는 행 '+miss+'개 확인 필요':''),miss?5000:3500);
 }
+async function copyBc(){const L=lines();if(!L.length)return toast('입력한 출고 수량이 없습니다');const withQty=confirm('수량도 같이 복사할까요?\n확인: 바코드[탭]수량   취소: 바코드만');const txt=L.map(l=>withQty?inBc(l.x)+'\t'+l.qty:inBc(l.x)).join('\n');try{await navigator.clipboard.writeText(txt);}catch(e){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}toast(L.length+'개 바코드를 복사했습니다');}
+
 async function dlView(){const V=view();if(!V.length)return toast('필터에 맞는 옵션이 없습니다');await loadXLSX();
-  const H=['품번','상품명','옵션','계절','연도','바코드','재고 상태','판매 가능','입고 예정','셀메 가용재고','최근 7일','기간 판매','일평균','남은 일수','권장 입고','보낼 수 있음','입고 수량','최종 판매가','상품 번호','옵션 번호','SKU 번호','세팅 점검','추가일'];
+  const H=['품번','상품명','옵션','계절','연도','바코드','재고 상태','판매 가능','입고 예정','셀메 가용재고','최근 7일','기간 판매','일평균','남은 일수','권장 입고','보낼 수 있음','출고 입력','최종 판매가','상품 번호','옵션 번호','SKU 번호','세팅 점검','추가일'];
   const n=v=>v==null||v===''||isNaN(v)?'':+v;
   const R=V.map(({x,c})=>[x.code||'',x.name||'',x.opt||'',x.sea||'',x.yr||'',inBc(x)||'',x.st||'',n(x.avail),n(x.inc),n(x.smAvail),n(x.s7),n(c.s),c.avg==null?'':Math.round(c.avg*100)/100,c.left==null?'':Math.round(c.left*10)/10,n(c.rec),n(c.can),+D.qty[x.oNo]||'',n(x.fin),x.gNo||'',x.oNo||'',x.sku||'',x.issue&&ISSUE[x.issue]?ISSUE[x.issue][0]:'',x.added||'']);
   const ws=XLSX.utils.aoa_to_sheet([H].concat(R));ws['!cols']=[14,40,22,6,7,16,10,8,8,9,8,8,7,8,8,9,8,10,12,12,14,14,16].map(w=>({wch:w}));ws['!autofilter']={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:R.length,c:H.length-1}})};
@@ -705,7 +750,7 @@ async function dlView(){const V=view();if(!V.length)return toast('필터에 맞�
   const wc=XLSX.utils.aoa_to_sheet([['항목','값']].concat(cond));wc['!cols']=[{wch:22},{wch:50}];const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'도착보장 재고');XLSX.utils.book_append_sheet(wb,wc,'필터 조건');
   const t=new Date(),hm=String(t.getHours()).padStart(2,'0')+String(t.getMinutes()).padStart(2,'0');XLSX.writeFile(wb,todayKst().replace(/-/g,'')+'_'+CFG.label+'_도착보장_필터_'+V.length+'옵션_'+hm+'.xlsx');toast('필터 결과 '+fmt(V.length)+'옵션을 엑셀로 내려받았습니다');}
 function dlCsv(){
-  const V=view();const H=['품번','상품명','옵션','바코드','재고 상태','판매 가능','입고 예정','셀메 가용재고','최근 7일','기간 판매','일평균','남은 일수','권장 입고','보낼 수 있음','입고 수량','최종 판매가','상품 번호','옵션 번호','SKU 번호','세팅 점검','추가일'];
+  const V=view();const H=['품번','상품명','옵션','바코드','재고 상태','판매 가능','입고 예정','셀메 가용재고','최근 7일','기간 판매','일평균','남은 일수','권장 입고','보낼 수 있음','출고 입력','최종 판매가','상품 번호','옵션 번호','SKU 번호','세팅 점검','추가일'];
   const T=[H,...V.map(({x,c})=>[x.code,x.name,x.opt,inBc(x),x.st,x.avail,x.inc,x.smAvail==null?'':x.smAvail,x.s7,c.s,Math.round(c.avg*100)/100,c.left==null?'':Math.round(c.left*10)/10,c.rec,c.can==null?'':c.can,D.qty[x.oNo]||'',x.fin,x.gNo,x.oNo,x.sku,x.issue?ISSUE[x.issue][0]:'',x.added||''])];
   const csv='﻿'+T.map(r=>r.map(v=>{const s=String(v==null?'':v);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(',')).join('\r\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download=CFG.label+'_도착보장_'+todayKst().replace(/-/g,'')+'.csv';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
@@ -725,7 +770,7 @@ $('#bView').addEventListener('click',()=>dlView().catch(e=>toast(e.message,4000)
 document.querySelectorAll('.ms').forEach(el=>{const id=el.id,pan=el.querySelector('.msp');el.querySelector('.msb').addEventListener('click',()=>{const open=pan.hidden;document.querySelectorAll('.ms .msp').forEach(p=>p.hidden=true);pan.hidden=!open;});pan.addEventListener('change',e=>{const c=e.target;if(c.type!=='checkbox')return;const m=MS[id];if(!m)return;if(c.checked)m.set.add(c.value);else m.set.delete(c.value);msLabel(id);m.onChange();});pan.addEventListener('click',e=>{if(e.target.closest('[data-clear]')&&MS[id]){msSet(id,[]);MS[id].onChange();}});});
 document.addEventListener('click',e=>{if(!e.target.closest('.ms'))document.querySelectorAll('.ms .msp').forEach(p=>p.hidden=true);});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.ms .msp').forEach(p=>p.hidden=true);});
-$('#kInC').addEventListener('click',()=>{if(!D.inOnly&&!inRows().length)return toast('아직 적은 입고 수량이 없습니다');setInOnly(!D.inOnly);});
+$('#kInC').addEventListener('click',()=>{if(!D.inOnly&&!lines().length)return toast(S.date+' 에 아직 적은 출고 수량이 없습니다');setInOnly(!D.inOnly);});
 $('#kInC').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('#kInC').click();}});
 $('#canTh').value=CN.th;
 $('#canTh').addEventListener('change',e=>{const v=Math.max(1,Math.round(+e.target.value||0));CN.th=v||10;e.target.value=CN.th;ls('clv_ab_canth_'+BRAND,String(CN.th));renderCan();});
@@ -734,12 +779,13 @@ $('#canSort').addEventListener('change',e=>{CN.sort=e.target.value;renderCan();}
 $('#canNot').addEventListener('change',e=>{CN.not=e.target.checked;renderCan();});
 $('#canXls').addEventListener('click',()=>dlCan());
 $('#cth').addEventListener('click',e=>{const th=e.target.closest('th');if(!th)return;const m=CSORT[th.dataset.k];if(m){CN.sort=m;$('#canSort').value=m;renderCan();}});
-$('#canAdd').addEventListener('click',()=>{const have=new Set(inRows().map(r=>r.x.oNo));let n=0;canView().forEach(({x,c})=>{if(c.send>0&&!have.has(x.oNo)&&inBc(x)){E.lines.push(['',inBc(x),c.send]);n++;}});if(!n)return toast('입고 목록에 더할 권장 입고가 없습니다');touch();renderIn();renderStock();toast('입고신청 탭 목록 끝에 '+n+'줄 추가했습니다',3000);});
+// 권장 수량 넣기: 출고 입력이 없는 옵션에 권장 입고와 보낼 수 있음 중 작은 값을 출고 일자의 출고 입력으로
+function addRec(V,where){const c=cur();let n=0;V.forEach(({x,c:k})=>{if(k.send>0&&!(+c[x.oNo]>0)){dayEnt().items[x.oNo]=k.send;n++;}});if(!n)return toast('출고 입력에 더할 권장 입고가 없습니다');touch();renderStock();kShip();hist();toast(where+' 권장 수량 '+n+'옵션을 '+S.date+' 출고 입력에 넣었습니다',3000);}
+$('#canAdd').addEventListener('click',()=>addRec(canView(),'입고 가능 탭의'));
 $('#sth').addEventListener('click',e=>{const th=e.target.closest('th');if(!th||!th.dataset.k)return;const k=th.dataset.k;if(D.sort===k)D.dir=-D.dir;else{D.sort=k;D.dir=k[0]==='$'||['avail','inc','smAvail','d7','fin'].includes(k)?-1:1;}renderStock();});
-$('#stb').addEventListener('change',e=>{const inp=e.target;if(!inp.closest('td.q')||inp.readOnly||inp.disabled)return;const o=inp.closest('tr').dataset.o,x=D.items.find(y=>String(y.oNo)===o);if(!x)return;const v=Math.max(0,Math.round(+inp.value||0));
-  if(!setOptQty(x,v)){inp.value=D.qty[o]||'';return;}D.qty=inQty();inp.value=D.qty[o]||'';inp.closest('td').classList.toggle('has',!!D.qty[o]);renderIn();qtyNote();});
+$('#stb').addEventListener('input',e=>{const inp=e.target;if(!inp.closest('td.q'))return;const tr=inp.closest('tr'),o=tr.dataset.o;setQty(o,inp.value);D.qty=cur();inp.closest('td').classList.toggle('has',!!D.qty[o]);kShip();hist();qtyNote();renderCan();});
 $('#stb').addEventListener('keydown',e=>{if(e.key!=='Enter'||!e.target.closest('td.q'))return;e.preventDefault();const tr=e.target.closest('tr').nextElementSibling;const n=tr&&tr.querySelector('td.q input:not([disabled])');if(n){n.focus();try{n.select();}catch(_){}}else e.target.blur();});
-$('#fillRec').addEventListener('click',()=>{const have=new Set(inRows().map(r=>r.x.oNo));let n=0;view().forEach(({x,c})=>{if(c.send>0&&!have.has(x.oNo)&&inBc(x)){E.lines.push(['',inBc(x),c.send]);n++;}});if(!n)return toast('입고 목록에 더할 권장 입고가 없습니다');touch();renderIn();renderStock();toast('입고신청 탭 목록 끝에 '+n+'줄 추가했습니다',3000);});
+$('#fillRec').addEventListener('click',()=>addRec(view(),'표에 보이는'));
 // 입고신청 목록 편집
 $('#inb').addEventListener('input',e=>{
   const el=e.target,f=el.dataset.f;if(f==null)return;const tr=el.closest('tr');let i=+tr.dataset.i;
@@ -747,7 +793,6 @@ $('#inb').addEventListener('input',e=>{
   E.lines[i][+f]=f==='2'?Math.max(0,Math.round(+el.value||0)):el.value.trim();
   inChanged();
 });
-$('#inb').addEventListener('change',()=>renderStock());
 $('#inb').addEventListener('keydown',e=>{
   const el=e.target,f=el.dataset.f;if(f==null)return;const i=+el.closest('tr').dataset.i;
   if(e.key==='Enter'){e.preventDefault();if(f==='0')focusIn(i,1);else if(f==='1')focusIn(i,2);else focusIn(i+1,1);}
@@ -777,10 +822,8 @@ $('#inb').addEventListener('click',e=>{
   const p=String(E.lines[i][0]||'').trim();if(p&&E.lines[i+1]&&!String(E.lines[i+1][0]||'').trim())E.lines[i+1][0]=p;
   E.lines.splice(i,1);touch();renderIn();renderStock();
 });
-function clearAllIn(){if(!E.lines.length)return toast('지울 입고 수량이 없습니다');const R=inRows();if(!confirm('입고 수량을 모두 지울까요?\n\n· 입고신청 목록 '+E.lines.length+'줄 ('+fmt(new Set(R.map(r=>r.x.oNo)).size)+'옵션 · '+fmt(R.reduce((a,r)=>a+r.q,0))+'개)\n\n'+(S.token?'[저장] 을 누르면 다른 기기에서도 지워집니다.':'GitHub 미연결이라 이 기기에서만 지워집니다.')))return;E.lines=[];touch();renderIn();renderStock();toast('입고 수량을 모두 지웠습니다'+(S.token?' · [저장] 을 눌러 주세요':''),4000);}
-$('#clearIn').addEventListener('click',clearAllIn);
-$('#resetQty').addEventListener('click',clearAllIn);
-$('#dlIn').addEventListener('click',dlIn);$('#dlSm').addEventListener('click',dlSm);$('#dlCsv').addEventListener('click',dlCsv);
+
+$('#dlIn').addEventListener('click',()=>dlIn().catch(e=>toast(e.message,4000)));$('#dlCsv').addEventListener('click',dlCsv);
 // ---- 패키징(송장번호) 파일 불러오기 (2026-10-21): 머리글에서 바코드 · 수량 · 패키지 · 송장 열을 찾고, 머리글이 없으면 값으로 찾음. 패키지 열이 없으면 송장번호마다 (1), (2)… ----
 const hasBc=b=>{const h=look(b);return !!(h&&h.length);};
 function inParse(aoa){
@@ -798,7 +841,11 @@ async function inImport(file){
   let wb;try{wb=XLSX.read(await file.arrayBuffer(),{type:'array'});}catch(e){return toast('파일을 읽지 못했습니다: '+(e.message||e),4000);}
   let best=null;wb.SheetNames.forEach(n=>{const P=inParse(XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,defval:'',raw:true}));if(!P)return;const found=P.lines.filter(l=>hasBc(l[1])).length,score=(P.pkgFrom?1e6:0)+found;if(!best||score>best.score)best={P,score,found,n};});
   if(!best)return toast('파일에서 바코드 · 수량 열을 찾지 못했습니다',4000);
-  const L=best.P.lines,have=E.lines.filter(l=>l[1]).length;let replace=true;
+  const L=best.P.lines;
+  // 패키지명이 '1030(1)' 처럼 날짜로 시작하면 그 날짜를 출고 일자로 (직진 대시보드와 같음)
+  const ds=new Set(L.map(l=>l[0]).filter(p=>/^\d{4}\(/.test(p)).map(p=>p.slice(0,4))),md=S.date.slice(5,7)+S.date.slice(8,10);
+  if(ds.size===1){const m=[...ds][0];if(m!==md){const y=+todayKst().slice(0,4);let d=y+'-'+m.slice(0,2)+'-'+m.slice(2);if(d>todayKst())d=(y-1)+d.slice(4);if(!isNaN(Date.parse(d))&&confirm('파일의 패키지명이 '+m+'(…) 입니다. 출고 일자를 '+d+' 로 바꿔서 넣을까요?\n(취소: 지금 출고 일자 '+S.date+' 에 넣음)')){S.date=d;render();}}}
+  const have=E.lines.filter(l=>l[1]).length;let replace=true;
   if(have)replace=confirm('입고 목록에 이미 '+have+'줄이 있습니다. 파일 내용으로 바꿀까요?\n(취소: 기존 목록 끝에 더함)');
   E.lines=replace?L.map(l=>l.slice()):E.lines.filter(l=>l[0]||l[1]||+l[2]).concat(L.map(l=>l.slice()));
   touch();setTab('in');renderIn();renderStock();
@@ -809,16 +856,26 @@ $('#inFileIn').addEventListener('change',e=>inImport(e.target.files&&e.target.fi
 $('#tabIn').addEventListener('dragover',e=>{if(e.dataTransfer&&[...e.dataTransfer.types].includes('Files')){e.preventDefault();$('#tabIn').classList.add('drop');}});
 $('#tabIn').addEventListener('dragleave',e=>{if(!e.relatedTarget||!$('#tabIn').contains(e.relatedTarget))$('#tabIn').classList.remove('drop');});
 $('#tabIn').addEventListener('drop',e=>{e.preventDefault();$('#tabIn').classList.remove('drop');const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];if(f)inImport(f);});
-// ---- GitHub 연결·저장 ----
-$('#aSave').addEventListener('click',entSave);
+// ---- 출고 일자 · 하단 단추 · GitHub 연결 (직진 대시보드와 같음) ----
+$('#date').addEventListener('change',e=>{if(!e.target.value)return;S.date=e.target.value;render();});
+$('#hist').addEventListener('change',e=>{if(!e.target.value)return;S.date=e.target.value;render();});
+$('#uDate').addEventListener('change',e=>{if(!e.target.value)return;S.date=e.target.value;render();});
+$('#uFrom').addEventListener('click',()=>{const L=lines();if(!L.length)return toast(S.date+' 에 입력한 출고 수량이 없습니다');const bad=L.filter(l=>!inBc(l.x)).length;if(E.lines.filter(l=>l[1]).length&&!confirm('지금 목록을 지우고 출고 입력 '+L.length+'건으로 바꿀까요?'))return;E.lines=L.filter(l=>inBc(l.x)).map((l,i)=>[i?'':defPkg(),inBc(l.x),l.qty]);touch();renderIn();toast('출고 입력 '+(L.length-bad)+'건을 한 패키지('+defPkg()+')로 넣었습니다'+(bad?' · 입고 바코드 없는 '+bad+'옵션은 빠짐':'')+'. 패키징 순서는 바코드 줄을 지우고 다시 넣거나 파일을 불러와 맞춰 주세요',5000);});
+$('#uClear').addEventListener('click',()=>{if(!E.lines.length)return toast(S.date+' 입고신청 목록이 비어 있습니다');if(!confirm(S.date+' 입고신청 목록 '+E.lines.length+'줄을 모두 지울까요? (출고 입력은 그대로)'))return;E.lines=[];touch();renderIn();});
+$('#bSave').addEventListener('click',entSave);
+$('#bSm').addEventListener('click',()=>dlSm().catch(e=>toast(e.message,4000)));
+$('#bIn').addEventListener('click',()=>dlIn().catch(e=>toast(e.message,4000)));
+$('#bCopy').addEventListener('click',copyBc);
+$('#bReset').addEventListener('click',resetDay);
 function tokenOpen(){$('#tokenIn').value='';$('#tokenErr').textContent=S.token?'현재 연결됨. 새 토큰을 넣거나 비워 두고 저장하면 해제됩니다.':'';$('#tokenOv').hidden=false;$('#tokenIn').focus();}
-$('#aGh').addEventListener('click',tokenOpen);
+$('#bGh').addEventListener('click',tokenOpen);
 $('#tokenCancel').addEventListener('click',()=>{$('#tokenOv').hidden=true;});
-$('#tokenForm').addEventListener('submit',async e=>{e.preventDefault();const t=$('#tokenIn').value.trim();if(!t){ls(CFG.lsToken,null);S.token='';eSha=null;$('#tokenOv').hidden=true;aStatus();toast('GitHub 연결을 해제했습니다');return;}S.token=t;try{const g=await ghGetPath(AE.path);eSha=g.sha;const r=g.json?entNorm(await decJson(g.json,S.pw)):null;if(r&&(r.t||'')>(E.t||''))entTake(r);else if(E.lines.length)eDirty=true;ls(CFG.lsToken,t);$('#tokenOv').hidden=true;aStatus();toast('GitHub 에 연결했습니다'+(eDirty?' · [저장] 을 누르면 이 기기 입력도 올라갑니다':''),3500);}catch(err){S.token='';$('#tokenErr').textContent=err.message||String(err);}});
+$('#tokenForm').addEventListener('submit',async e=>{e.preventDefault();const t=$('#tokenIn').value.trim();if(!t){ls(CFG.lsToken,null);S.token='';eSha=null;$('#tokenOv').hidden=true;status();toast('GitHub 연결을 해제했습니다');return;}S.token=t;try{const g=await ghGetPath(AE.path);eSha=g.sha;const r=g.json?entNorm(await decJson(g.json,S.pw)):null;if(r){A.entries=merge(A.entries,r);entSaveLocal();}eDirty=localNewer(r);ls(CFG.lsToken,t);$('#tokenOv').hidden=true;render();toast('GitHub 에 연결했습니다'+(eDirty?' · [저장] 을 누르면 이 기기 입력도 올라갑니다':''),3500);}catch(err){S.token='';$('#tokenErr').textContent=err.message||String(err);}});
 // 다른 탭(직진 대시보드·상품마스터)에서 토큰을 넣거나 지우면 이 탭에도 반영
-window.addEventListener('storage',e=>{if(e.key===CFG.lsToken){S.token=e.newValue||'';eSha=null;aStatus();}});
+window.addEventListener('storage',e=>{if(e.key===CFG.lsToken){S.token=e.newValue||'';eSha=null;status();}});
 window.addEventListener('beforeunload',e=>{if(eDirty&&S.token){e.preventDefault();e.returnValue='';}});
-$('#brands').addEventListener('click',e=>{const a=e.target.closest('a[data-brand]');if(!a||a.dataset.brand===BRAND||!(eDirty&&S.token))return;if(confirm('아직 GitHub 에 저장하지 않은 입고 목록이 있습니다(이 기기에는 남아 있음). 그래도 '+BRANDS[a.dataset.brand].label+'(으)로 바꿀까요?'))eDirty=false;else{e.stopPropagation();e.preventDefault();}},true);
+$('#brands').addEventListener('click',e=>{const a=e.target.closest('a[data-brand]');if(!a||a.dataset.brand===BRAND||!(eDirty&&S.token))return;if(confirm('아직 GitHub 에 저장하지 않은 입력분이 있습니다(이 기기에는 남아 있음). 그래도 '+BRANDS[a.dataset.brand].label+'(으)로 바꿀까요?'))eDirty=false;else{e.stopPropagation();e.preventDefault();}},true);
+
 (function(){let pw='';try{pw=sessionStorage.getItem('clv_pw_s')||localStorage.getItem('clv_pw')||'';}catch(e){}if(pw){$('#pw').value=pw;start(pw,true);}})();
 })();
 </script>
