@@ -1,0 +1,415 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>상품마스터 대시보드</title>
+<meta name="description" content="브랜드별 상품마스터(품번별 가격·재고·판매·플랫폼 상품번호)를 보고 기획전 참여 상품을 입력해 내려받는 페이지">
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--ink:#1c1f24;--mut:#6b7280;--line:#e5e7eb;--acc:#1e5eff;--accbg:#eff6ff;--accline:#bfdbfe;--r:#c00000;--ok:#16a34a;--warn:#b45309;--warnbg:#fffbeb;--head:#111827}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Malgun Gothic","맑은 고딕",-apple-system,system-ui,sans-serif;font-size:14px;padding-bottom:24px}
+header{background:var(--head);color:#fff;padding:12px 16px;position:sticky;top:0;z-index:5}
+header h1{margin:0;font-size:16px;font-weight:700}header p{margin:4px 0 0;font-size:12px;color:#cbd5e1}
+header a{color:#93c5fd;text-decoration:none}header .tag{display:inline-block;background:var(--ok);color:#fff;border-radius:999px;padding:1px 8px;font-size:11px;margin-left:6px;vertical-align:1px}
+header .brands{display:inline-flex;gap:4px;margin-left:8px;vertical-align:2px}header .brands a.tag{margin:0;background:#334155;color:#cbd5e1;cursor:pointer;padding:2px 10px;font-weight:600}header .brands a.tag:hover{background:#475569;color:#fff}header .brands a.tag.on{background:var(--ok);color:#fff;cursor:default}
+main{max-width:1280px;margin:0 auto;padding:12px 16px}
+.kpi{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.kpi.k4{grid-template-columns:repeat(2,1fr)}@media(min-width:760px){.kpi.k4{grid-template-columns:1fr 1fr 1fr 2fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.card .t{font-size:11.5px;color:var(--mut)}.card .n{font-size:19px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums}.card .s{font-size:11.5px;color:var(--mut);margin-top:2px}
+.card.acc{border-color:var(--accline);background:var(--accbg)}.card.acc .n{color:var(--acc)}
+.ms{position:relative}.ms .msb{font:inherit;font-size:13px;padding:6px 26px 6px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);cursor:pointer;white-space:nowrap;max-width:260px;overflow:hidden;text-overflow:ellipsis;position:relative}
+.ms .msb::after{content:"▾";position:absolute;right:9px;top:50%;transform:translateY(-50%);color:var(--mut);font-size:11px}.ms .msb b{font-weight:600;color:var(--acc)}.ms.sel .msb{border-color:var(--accline);background:var(--accbg)}
+.ms .msp{position:absolute;top:calc(100% + 4px);left:0;z-index:30;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.12);padding:6px;min-width:200px;max-height:320px;overflow:auto}
+.ms .msp label{display:flex;align-items:center;gap:7px;padding:6px 8px;font-size:13px;color:var(--ink);border-radius:6px;cursor:pointer;white-space:nowrap}.ms .msp label:hover{background:#f3f4f6}.ms .msp label.on{color:var(--acc);font-weight:600}
+.ms .msp .msx{display:flex;justify-content:space-between;gap:6px;padding:4px 8px 2px;font-size:11.5px;color:var(--mut);border-bottom:1px solid var(--line);margin-bottom:4px}.ms .msp .msx button{font:inherit;background:none;border:0;color:var(--acc);cursor:pointer;padding:0}
+.sea{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:4px;padding:0 5px;font-size:10.5px;font-weight:600;margin-left:4px;vertical-align:1px}.sea.s1{background:#ecfdf5;color:#065f46}.sea.s2{background:#fff7ed;color:#9a3412}.sea.s3{background:#fef3c7;color:#92400e}.sea.s4{background:#eff6ff;color:#1e40af}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0 8px}
+.bar label{font-size:12px;color:var(--mut);display:flex;align-items:center;gap:4px}
+input[type=date],select,input[type=search],input[type=text],input[type=password]{font:inherit;font-size:13.5px;padding:7px 9px;border:1px solid #d1d5db;border-radius:8px;background:#fff;color:var(--ink);min-height:36px}
+input[type=search]{flex:1;min-width:160px}
+.btn{display:inline-flex;align-items:center;gap:4px;padding:7px 12px;border:1px solid var(--accline);border-radius:8px;background:var(--accbg);color:var(--acc);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;min-height:36px;white-space:nowrap}
+.btn.pri{background:var(--acc);color:#fff;border-color:var(--acc)}.btn.sub{background:#fff;color:#374151;border-color:#d1d5db}
+.btn:disabled{opacity:.55;cursor:not-allowed}.btn:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.wrap{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:auto;max-height:calc(100vh - 110px);min-height:320px;-webkit-overflow-scrolling:touch}
+table{border-collapse:separate;border-spacing:0;width:100%}
+th,td{padding:7px 8px;border-bottom:1px solid var(--line);font-size:13px;text-align:right;font-variant-numeric:tabular-nums;vertical-align:middle;white-space:nowrap}
+thead th{position:sticky;top:0;background:#f9fafb;color:#374151;font-weight:600;z-index:2;cursor:pointer;user-select:none}
+thead th small{display:block;font-weight:400;color:var(--mut);font-size:10.5px}thead th.on{color:var(--acc)}
+td.c1,th.c1{text-align:left;position:sticky;left:0;background:#fff;z-index:1;box-shadow:1px 0 0 var(--line)}thead th.c1{z-index:3;background:#f9fafb}
+td small,td.c1 small{display:block;font-weight:400;color:var(--mut);font-size:11px}td.c1 b{font-family:Consolas,"Malgun Gothic",monospace;font-size:12.5px}
+.note{font-size:12px;color:var(--mut);margin:8px 0 0;line-height:1.6}
+.more{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 0;font-size:12.5px;color:var(--mut)}.more .btn{min-height:30px;padding:4px 10px;font-size:12.5px}
+.ov{position:fixed;inset:0;background:rgba(17,24,39,.96);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px}.ov[hidden]{display:none}
+.box{background:#1f2937;border:1px solid #374151;border-radius:14px;padding:24px 22px;width:min(100%,380px);color:#e5e7eb}
+.box h2{font-size:16px;margin:0 0 4px}.box p{margin:0 0 12px;font-size:12.5px;color:#9ca3af;line-height:1.5}
+.box input[type=password],.box input[type=text]{width:100%;font-size:16px;padding:10px 12px;border:1px solid #4b5563;background:#111827;color:#fff}
+.box label{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#9ca3af;margin:10px 0 12px}
+.box .row{display:flex;gap:8px}.box .btn{flex:1;justify-content:center;padding:11px}.box .err{color:#fca5a5;font-size:12.5px;margin-top:8px;min-height:1.2em}
+.box a{color:#93c5fd}
+.toast{position:fixed;left:50%;bottom:40px;transform:translateX(-50%);background:#111827;color:#fff;padding:9px 14px;border-radius:999px;font-size:13px;z-index:60;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw}.toast.on{opacity:1}
+.times{font-size:11.5px;color:#cbd5e1;margin-top:4px;display:flex;flex-wrap:wrap;gap:4px 12px}.times b{color:#fff;font-weight:600}
+.chk{font-size:12.5px;color:#374151;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}.chk input{width:16px;height:16px}
+#mtbl{min-width:0}#mtbl td,#mtbl th{white-space:nowrap}#mtbl td.l,#mtbl th.l{text-align:left}#mtbl td.tx{text-align:left;max-width:200px;overflow:hidden;text-overflow:ellipsis}
+#mtbl td.c1,#mtbl th.c1{width:128px;min-width:128px;max-width:128px;overflow:hidden;text-overflow:ellipsis}#mtbl td.nm,#mtbl th.nm{text-align:left;position:sticky;left:128px;background:#fff;z-index:1;box-shadow:1px 0 0 var(--line);white-space:normal;min-width:300px;max-width:300px;width:300px}#mtbl thead th.nm{z-index:3;background:#f9fafb}
+#mtbl tbody td{padding:8px 12px;line-height:1.4}#mtbl thead th{padding:8px 12px}#mtbl tbody tr:nth-child(even) td,#mtbl tbody tr:nth-child(even) td.c1,#mtbl tbody tr:nth-child(even) td.nm{background:#fafafa}#mtbl tbody tr:hover td,#mtbl tbody tr:hover td.c1,#mtbl tbody tr:hover td.nm{background:#eef2ff}#mtbl tbody tr:nth-child(even) td.gs{background:#ecfdf5}#mtbl tbody tr:hover td.gs{background:#e0f2fe}
+#mtbl td.gf,#mtbl th.gf{border-left:2px solid #e5e7eb}#mtbl td.nm small .sea{margin:0 6px 0 0;vertical-align:0}#mtbl td.nm .t{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cfbtn{float:right;margin:-2px -6px 0 4px;padding:0 4px;border:1px solid transparent;border-radius:4px;background:none;color:#9ca3af;font-size:11px;line-height:16px;cursor:pointer}.cfbtn:hover{border-color:var(--line);background:#fff;color:#374151}.cfbtn.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.cfp{position:fixed;z-index:40;width:280px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.16);padding:10px;font-size:12.5px;color:#111827;text-align:left}.cfp .cfh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}.cfp .cfh span{color:var(--mut);font-size:11.5px}.cfp .cfs{display:flex;gap:6px;margin-bottom:8px}.cfp .cfs button{flex:1;padding:5px;border:1px solid var(--line);border-radius:6px;background:#f9fafb;cursor:pointer;font-size:12px}.cfp .cfs button:hover{background:#eef2ff}.cfp .cfr{display:flex;align-items:center;gap:4px;margin-bottom:8px;color:#374151}.cfp .cfr input{width:82px;padding:4px 6px;border:1px solid var(--line);border-radius:6px;font-size:12px}.cfp .cfq{width:100%;box-sizing:border-box;padding:5px 8px;border:1px solid var(--line);border-radius:6px;font-size:12.5px;margin-bottom:6px}.cfp label{display:flex;align-items:center;gap:6px;padding:3px 2px;cursor:pointer;border-radius:4px}.cfp label:hover{background:#f3f4f6}.cfp label .v{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cfp label small{color:var(--mut);font-size:11px}.cfp label.all{border-bottom:1px solid var(--line);border-radius:0;margin-bottom:2px}.cfp .cfl{max-height:260px;overflow:auto}.cfp .cfm{color:var(--mut);font-size:11.5px;padding:6px 2px}.cfp .cfb{display:flex;gap:6px;justify-content:flex-end;margin-top:8px;border-top:1px solid var(--line);padding-top:8px}.cfp .cfb [data-a=clear]{margin-right:auto}
+#mtbl th.ci,#mtbl td.ci{position:sticky;right:var(--r,0);z-index:1;width:104px;min-width:104px;max-width:104px;box-shadow:-2px 0 0 #fcd34d}#mtbl thead th.ci{z-index:3}
+#mtbl th.ci{background:#fef3c7;color:#92400e}#mtbl th.ci small{color:#b45309}#mtbl td.ci,#mtbl tbody tr:nth-child(even) td.ci,#mtbl tbody tr:hover td.ci{padding:3px 8px;text-align:center;background:#fffbeb}#mtbl td.ci.has,#mtbl tbody tr:nth-child(even) td.ci.has,#mtbl tbody tr:hover td.ci.has{background:#fde68a}#mtbl td.ci input[type=text]{width:88px;box-sizing:border-box;font:inherit;font-size:13px;padding:4px 6px;border:1px solid #d1d5db;border-radius:6px;text-align:center;min-height:30px;background:#fff}#mtbl td.ci input[type=text]:focus{outline:2px solid #f59e0b;outline-offset:0;border-color:#f59e0b}
+#mtbl th.gk{color:#1e40af}#mtbl th.gp{color:#7c2d12}#mtbl th.ga{color:#5b21b6}#mtbl th.gz{color:#9d174d}#mtbl th.gs{color:#065f46}#mtbl td.gs{background:#f0fdf4}#mtbl th.gs.on,#mtbl td.gs.z{color:#9ca3af}
+#mtbl td.fb{color:#6b7280;font-style:italic}
+.slow{color:#b91c1c;font-weight:600}.slowb{color:#b91c1c;font-weight:600}.slb{border:1px solid #d1d5db;background:#fff;border-radius:6px;padding:1px 9px;font:inherit;font-size:12px;cursor:pointer;color:#374151;white-space:nowrap}.slb:hover{border-color:#2563eb;color:#1d4ed8}td.slow .slb{background:#fee2e2;border-color:#fca5a5;color:#b91c1c;font-weight:700}.slb i{font-style:normal;color:#2563eb;font-size:9px;margin-left:4px;vertical-align:2px}#mtbl td.via{color:#7c3aed;text-decoration:underline dotted}#mtbl td.xd{position:relative}#mtbl td.xd::after{content:'*';color:#d97706;font-weight:700;margin-left:2px}
+.bar.camp{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:8px 10px;margin-top:0}.bar.camp select{max-width:360px}.bar.camp .cnt{background:#92400e;color:#fff;font-weight:700;border-radius:999px;padding:4px 12px;font-size:13px;white-space:nowrap}#mtbl th.ci .cn{display:block;margin:3px auto 0;width:max-content;max-width:100%;font-size:11px;font-weight:700;color:#fff;background:#b45309;border-radius:999px;padding:1px 8px}#mtbl th.ci .cn.z{background:#e5e7eb;color:#6b7280}
+.bar.range{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:8px 10px;margin-top:0}.bar.range input[type=date]{font:inherit;font-size:13px;padding:5px 7px;border:1px solid var(--line);border-radius:8px;min-height:32px}
+.hs{overflow-x:auto;overflow-y:hidden;margin:0 0 4px;background:#fff;border:1px solid var(--line);border-radius:8px}.hs[hidden]{display:none}.hs>div{height:1px}
+#mCols.on{border-color:var(--acc);color:var(--acc)}#mCols.cust{border-color:var(--accline);background:var(--accbg);color:var(--acc)}
+.colp{position:fixed;z-index:40;width:340px;max-width:calc(100vw - 16px);background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.16);padding:10px;font-size:13px;color:#111827;text-align:left}.colp .cph{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:4px}.colp .cph span{color:var(--mut);font-size:11.5px}.colp .cpf{color:var(--mut);font-size:11.5px;line-height:1.5}
+.colp .cpl{overflow:auto;max-height:min(58vh,520px);border:1px solid var(--line);border-radius:8px;margin:8px 0}.colp .cpr{display:flex;align-items:center;gap:8px;padding:5px 8px;border-bottom:1px solid #f3f4f6;background:#fff;user-select:none}.colp .cpr:last-child{border-bottom:0}.colp .cpr .hd{cursor:grab;color:#9ca3af;font-size:15px;padding:2px 6px;touch-action:none;border-radius:4px}.colp .cpr .hd:hover{background:#f3f4f6;color:#374151}.colp .cpr input{width:16px;height:16px;margin:0;cursor:pointer}.colp .cpr .v{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.colp .cpr small{font-size:11px;color:var(--mut);white-space:nowrap}.colp .cpr.off .v{color:#9ca3af;text-decoration:line-through}.colp .cpr.gh .v{color:#9ca3af}.colp .cpr.drag{background:#eef2ff;box-shadow:0 2px 8px rgba(0,0,0,.18);position:relative;z-index:1}.colp .cpr.drag .hd{cursor:grabbing}.colp.dragging{cursor:grabbing}
+.colp .cpb{display:flex;gap:6px;justify-content:flex-end}.colp .cpb .btn{min-height:30px;padding:4px 10px;font-size:12.5px}.colp .cpb [data-a=reset]{margin-right:auto}
+.mm{position:relative;display:inline-flex}.mmp{position:absolute;right:0;top:calc(100% + 4px);z-index:30;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.12);padding:6px;display:flex;flex-direction:column;gap:2px;min-width:230px}.mmp[hidden]{display:none}.mmp button{font:inherit;font-size:13px;text-align:left;padding:9px 10px;border:0;border-radius:6px;background:none;cursor:pointer;color:var(--ink);white-space:nowrap}.mmp button:hover{background:#f3f4f6}
+@media(max-width:600px){main{padding:10px 16px}.wrap{max-height:none}}
+.cmline{position:fixed;z-index:70;width:3px;background:var(--acc);border-radius:2px;pointer-events:none;box-shadow:0 0 0 1px #fff}thead th.cmsrc{opacity:.45}body.cmdragging,body.cmdragging *{cursor:grabbing!important;user-select:none!important}
+.tabs{display:flex;gap:6px;margin:0 0 10px;border-bottom:1px solid var(--line)}.tabs button{font:inherit;font-size:14px;font-weight:600;padding:9px 14px;border:0;background:none;color:var(--mut);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}.tabs button.on{color:var(--acc);border-bottom-color:var(--acc)}.tabs button span{font-weight:400;font-size:12.5px}</style></head><body>
+<div class="ov" id="login"><form class="box" id="loginForm"><h2>상품마스터 대시보드 <span class="tag" id="loginBrand"></span></h2><p>매출보고 페이지와 같은 비밀번호를 입력하면 자료가 열립니다.</p>
+<input type="password" id="pw" placeholder="비밀번호" autocomplete="current-password" autofocus>
+<label><input type="checkbox" id="remember" checked> 이 기기에서 기억하기</label>
+<div class="row"><button type="submit" class="btn pri" id="go">열기</button></div><div class="err" id="loginErr"></div></form></div>
+<div class="ov" id="tokenOv" hidden><form class="box" id="tokenForm"><h2>GitHub 연결 (기획전 입력 저장)</h2><p>기획전 입력을 모든 기기에서 같이 보려면 GitHub 토큰이 필요합니다. 토큰이 없으면 입력한 내용은 이 기기(브라우저)에만 남고, 엑셀 내려받기는 그대로 됩니다.<br>토큰은 이 기기에만 저장되며 직진 재고·출고 대시보드에서 이미 연결했다면 같은 토큰을 그대로 씁니다.</p>
+<input type="password" id="tokenIn" placeholder="github_pat_… (비워 두면 연결 해제)" autocomplete="off">
+<div class="row" style="margin-top:12px"><button type="submit" class="btn pri">저장</button><button type="button" class="btn sub" id="tokenCancel">닫기</button></div><div class="err" id="tokenErr"></div></form></div>
+<header><h1>상품마스터 대시보드 <span class="brands" id="brands"><a data-brand="rouet" class="tag">루엣</a><a data-brand="dali" class="tag">달리</a></span></h1><p id="sub">자료를 여는 중…</p><div class="times" id="times" hidden></div></header>
+<main id="app" hidden><nav class="tabs" id="mTabs" hidden><button type="button" data-mt="all" class="on">전체</button><button type="button" data-mt="excl" title="달리호텔 자사몰 &lt;자사몰단독프로모션&gt; 메뉴에 있는 상품 (상품마스터 갱신 때 자동으로 읽음)">자사몰 단독 <span id="mTabExclN"></span></button></nav>
+<div class="kpi k4">
+ <div class="card"><div class="t">품번 <span id="mCountLbl"></span></div><div class="n" id="mCount">-</div><div class="s" id="mCountS"></div></div>
+ <div class="card"><div class="t">직진 재고 · 전체 재고</div><div class="n" id="mStock">-</div><div class="s" id="mStockS"></div></div>
+ <div class="card"><div class="t">직진 판매량 · 매출 합계 <span id="mSalesLbl"></span></div><div class="n" id="mSales">-</div><div class="s" id="mSalesS"></div></div>
+ <div class="card acc"><div class="t">기획전 참여 <span id="mCampLbl"></span></div><div class="n" id="mCampN">-</div><div class="s" id="mCampS"></div></div>
+</div>
+<div class="bar">
+ <input type="search" id="mQ" placeholder="품번 · 상품명 · 업체명 · 플랫폼 상품번호 검색" autocomplete="off">
+ <div class="ms" id="msMSea" data-title="시즌"><button type="button" class="msb"></button><div class="msp" hidden></div></div>
+ <div class="ms" id="msMYr" data-title="년도"><button type="button" class="msb"></button><div class="msp" hidden></div></div>
+ <div class="ms" id="msMSrc" data-title="소싱"><button type="button" class="msb"></button><div class="msp" hidden></div></div>
+ <div class="ms" id="msMKind" data-title="상품구분"><button type="button" class="msb"></button><div class="msp" hidden></div></div>
+ <div class="ms" id="msMSt" data-title="판매상태"><button type="button" class="msb"></button><div class="msp" hidden></div></div>
+ <div class="ms" id="msMSlow" data-title="부진 여부"><button type="button" class="msb"></button><div class="msp" hidden></div></div>
+ <div class="ms" id="msMG" data-title="열 묶음"><button type="button" class="msb"></button><div class="msp" hidden></div></div>
+ <button type="button" class="btn sub" id="mCols" title="열 순서를 끌어서 바꾸거나 열을 숨깁니다 (이 기기에 기억됨)">열 설정</button>
+ <button type="button" class="btn sub" id="mCsv" title="지금 조건에 맞는 품번 전체를 CSV 로 내려받습니다">CSV 내려받기</button>
+ <span class="mm" id="mSlowWrap"><button type="button" class="btn sub" id="mSlowBtn" aria-haspopup="true" title="지금 표에 보이는 품번(검색 · 필터 결과 전체)의 부진 여부를 한 번에 바꿉니다. 한 품번씩은 표의 부진 여부 칸을 누르면 바뀝니다">부진 일괄 입력 ▾</button><div class="mmp" id="mSlowMenu" hidden><button type="button" data-s="부진">표에 보이는 품번 모두 부진으로</button><button type="button" data-s="정상">표에 보이는 품번 모두 정상으로</button><button type="button" data-s="">표에 보이는 품번 직접 입력 지우기 (기본값으로)</button></div></span>
+ <span class="note" id="mShown"></span><button type="button" class="btn sub" id="mCfClr" hidden></button>
+</div>
+<div class="bar range" id="mRangeBar">
+ <label>판매 기간 <select id="mPreset"><option value="30">최근 30일</option><option value="7">최근 7일</option><option value="1">오늘</option><option value="cur">이번 달</option><option value="prev">전월</option><option value="all">전체 이력</option><option value="custom">직접 선택</option></select></label>
+ <input type="date" id="mFrom" aria-label="시작일"> <span class="note">~</span> <input type="date" id="mTo" aria-label="종료일">
+ <span class="note" id="mRangeNote"></span>
+</div>
+<div class="bar camp">
+ <label>기획전 <select id="mCampSel"><option value="">(선택)</option></select></label>
+ <span class="cnt" id="mCampCnt" hidden title="이 기획전에 값을 적은 품목 수 (보기 필터와 관계없이 전체)"></span>
+ <button type="button" class="btn" id="mCampNew">＋ 새 기획전</button>
+ <button type="button" class="btn sub" id="mCampEdit" disabled>편집</button>
+ <button type="button" class="btn sub" id="mCampCsv" disabled title="선택한 기획전에 값을 적은 상품만, 그 플랫폼의 상품코드(지그재그·에이블리·퀸잇)와 함께 엑셀 파일로 내려받습니다">참여 상품 엑셀 .xlsx</button>
+ <label class="chk"><input type="checkbox" id="mCampOnly" disabled> 참여 상품만 보기</label>
+ <button type="button" class="btn pri" id="mSave">저장</button>
+ <button type="button" class="btn sub" id="mGh">GitHub 연결</button>
+ <span class="mm"><button type="button" class="btn sub" id="mMore" title="설정" aria-haspopup="true">⋯</button><div class="mmp" id="mMoreMenu" hidden><button type="button" data-m="gh">GitHub 연결(토큰) 설정</button><button type="button" data-m="pw">다른 비밀번호로 다시 열기</button></div></span>
+ <span class="note" id="mSt"></span>
+</div>
+<div class="hs" id="mHs" hidden title="표를 옆으로 넘깁니다 (표 아래 막대와 같이 움직임)"><div></div></div>
+<div class="wrap" id="mWrap"><table id="mtbl"><thead id="mth"></thead><tbody id="mtb"></tbody></table></div>
+<div class="more" id="mMoreBar" hidden><span id="mMoreTxt"></span><button type="button" class="btn sub" id="mMoreBtn">이어서 보기</button><button type="button" class="btn sub" id="mAllBtn">전부 보기</button></div>
+<p class="note" id="mNote">자료를 여는 중…</p>
+</main>
+<div class="ov" id="campOv" hidden><form class="box" id="campForm"><h2 id="campTitle">새 기획전</h2><p>표 오른쪽 끝에 노란 기획전 열이 붙어서(표를 옆으로 넘겨도 계속 보임) 품목마다 10%, 5% 처럼 원하는 내용을 직접 적을 수 있습니다. 무엇이든 적은 품목이 참여 상품이 되고, 칸을 비우면 참여에서 빠집니다. 적은 내용은 저장하면 모든 기기에서 같이 보이고, "참여 상품 엑셀"로 플랫폼 상품코드와 함께 내려받을 수 있습니다.</p>
+<label style="display:block;margin:0 0 8px">플랫폼<br><select id="campPlat" style="width:100%"><option>지그재그</option><option>에이블리</option><option>퀸잇</option><option>기타</option></select></label>
+<label style="display:block;margin:0 0 8px">기획전 이름<br><input type="text" id="campName" placeholder="예: 가을 신상 연합전" autocomplete="off"></label>
+<label style="display:block;margin:0 0 8px">기간<br><div class="row"><input type="date" id="campFrom" style="flex:1"><input type="date" id="campTo" style="flex:1"></div></label>
+<label><input type="checkbox" id="campHide" autocomplete="off"> 표에서 숨기기 (끝난 기획전용 · 위에서 고르면 다시 보임)</label>
+<div class="row"><button type="submit" class="btn pri">저장</button><button type="button" class="btn sub" id="campCancel">닫기</button><button type="button" class="btn sub" id="campDel" hidden style="color:#b91c1c">삭제</button></div><div class="err" id="campErr"></div></form></div>
+<div class="toast" id="toast"></div>
+<script>
+(function(){
+// 상품마스터 전용 페이지 (2026-09-29: 직진 재고·출고 대시보드의 상품마스터 탭을 따로 떼어 냄. 루엣·달리 공용)
+// 브랜드: ?brand=rouet|dali 로 고르고, 없으면 이 기기에서 마지막에 본 브랜드(clv_jj_brand), 그것도 없으면 루엣.
+// 자료(master.enc)·기획전 입력(campaigns.json)·브라우저 저장 키는 대시보드 탭이던 때와 같은 자리라서 이전 입력이 그대로 이어집니다.
+// 가격 묶음은 브랜드마다 다름: 달리는 정상가 = 셀메이트 판매단가, 루엣은 시중판매가 = 카카오 시중 판매가이고 상시할인가·상시할인가 배수가 더 있음
+const BRANDS={
+rouet:{label:'루엣',short:'루엣',srcLbl:'생산구분',srcS:'셀메 상품분류',slowS:'직접 입력',
+ price:[{k:'cost',l:'원가',s:'셀메이트'},{k:'list',l:'시중판매가',s:'카카오 시중 판매가'},{k:'mall',l:'지그재그 판매가',s:'상시판매가 · 스토어'},{k:'sale',l:'상시할인가',s:'할인 판매가 · 없으면 판매가'},{k:'saleMult',l:'상시할인가 배수',t:'dec',s:'상시할인가 ÷ 원가'},{k:'jjPrice',l:'직진 판매가',s:'카카오 직진'},{k:'mult',l:'직진 배수',t:'dec',s:'직진 판매가 ÷ 원가'},{k:'listMult',l:'시중가 배수',t:'dec',s:'시중판매가 ÷ 원가'}],
+ xlsxPrice:['cost','list','mall','sale','jjPrice'],
+ priceNote:'원가는 셀메이트, 시중판매가는 카카오 시중 판매가, 지그재그 판매가(상시판매가)는 카카오 스토어 판매가, 상시할인가는 지그재그 할인 판매가(없으면 판매가), 직진 판매가는 카카오 직진배송 판매가입니다. 상시할인가 배수는 상시할인가 ÷ 원가, 직진 배수는 직진 판매가 ÷ 원가입니다.'},
+dali:{label:'달리호텔',short:'달리',srcLbl:'소싱 구분',srcS:'셀메이트',slowS:'직접 입력',
+ price:[{k:'cost',l:'원가',s:'셀메이트'},{k:'list',l:'정상가',s:'셀메 판매단가'},{k:'mall',l:'자사몰 판매가',s:'스토어 판매가'},{k:'jjPrice',l:'직진 판매가',s:'카카오 직진'},{k:'mult',l:'배수',t:'dec',s:'직진 판매가 ÷ 원가'},{k:'listMult',l:'정상가 배수',t:'dec',s:'정상가 ÷ 원가'}],
+ xlsxPrice:['cost','list','mall','jjPrice'],
+ priceNote:'원가·정상가는 셀메이트, 자사몰 판매가는 카카오 스토어 판매가, 직진 판매가는 카카오 직진배송 판매가이고 배수는 직진 판매가 ÷ 원가입니다.'}};
+const BRAND=(function(){let b='';try{b=new URLSearchParams(location.search).get('brand')||'';}catch(e){}if(!BRANDS[b]){try{b=localStorage.getItem('clv_jj_brand')||'';}catch(e){}}if(!BRANDS[b])b='rouet';try{localStorage.setItem('clv_jj_brand',b);}catch(e){}return b;})();
+const BR=BRANDS[BRAND];
+const CFG={brand:BRAND,label:BR.label,repo:'clovism-clo/clovism-sales',dataUrl:BRAND+'/master.enc',lsToken:'clv_gh_token',xlsx:'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'};
+const PAGE=300;
+document.title='상품마스터 대시보드 · '+CFG.label;document.getElementById('loginBrand').textContent=CFG.label;
+document.querySelectorAll('#brands a').forEach(a=>{a.classList.toggle('on',a.dataset.brand===BRAND);a.title=a.dataset.brand===BRAND?BR.label+' 자료를 보고 있습니다':BRANDS[a.dataset.brand].label+' 자료로 바꿉니다';});
+document.getElementById('msMSrc').dataset.title=BR.srcLbl;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const fmt=n=>n==null||isNaN(n)?'-':Math.round(n).toLocaleString('ko-KR');
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const tob64=u=>{let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s);};
+function todayKst(){const d=new Date(Date.now()+9*3600e3);return d.toISOString().slice(0,10);}
+function ymd(d){return d.replace(/-/g,'');}
+const S={pw:'',token:''};
+const SEA_CLS={'봄':'s1','여름':'s2','가을':'s3','겨울':'s4'};
+let toastT;function toast(m,ms){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),ms||2200);}
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v);}catch(e){return null;}}
+
+// ---- 암호화 (매출보고 페이지와 같은 방식: PBKDF2-SHA256 300,000회 + AES-256-GCM) ----
+async function key(pw,salt){const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:300000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
+async function decBytes(buf,pw){const u=new Uint8Array(buf);const k=await key(pw,u.slice(0,16));return crypto.subtle.decrypt({name:'AES-GCM',iv:u.slice(16,28)},k,u.slice(28));}
+async function encJson(obj,pw){const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));const k=await key(pw,salt);const data=await crypto.subtle.encrypt({name:'AES-GCM',iv},k,new TextEncoder().encode(JSON.stringify(obj)));return {v:1,salt:tob64(salt),iv:tob64(iv),data:tob64(new Uint8Array(data))};}
+async function decJson(j,pw){const k=await key(pw,b64(j.salt));const p=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(j.iv)},k,b64(j.data));return JSON.parse(new TextDecoder().decode(p));}
+
+// ---- GitHub 저장소 파일 읽기/쓰기 (기획전 campaigns.json) ----
+function ghHeaders(){return {Authorization:'Bearer '+S.token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};}
+async function ghGetPath(path){const r=await fetch(`https://api.github.com/repos/${CFG.repo}/contents/${path}`,{headers:ghHeaders(),cache:'no-store'});if(r.status===404)return {json:null,sha:null};if(r.status===401||r.status===403)throw new Error('GitHub 토큰이 유효하지 않습니다 ('+r.status+')');if(!r.ok)throw new Error('GitHub 읽기 실패 '+r.status);const j=await r.json();return {json:JSON.parse(new TextDecoder().decode(b64((j.content||'').replace(/\n/g,'')))),sha:j.sha};}
+async function ghPutPath(path,enc,sha,msg){const body={message:msg,content:btoa(JSON.stringify(enc))};if(sha)body.sha=sha;const r=await fetch(`https://api.github.com/repos/${CFG.repo}/contents/${path}`,{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},ghHeaders()),body:JSON.stringify(body)});if(!r.ok){const t=await r.text().catch(()=>'');const e=new Error('GitHub 저장 실패 '+r.status+(t?': '+t.slice(0,120):''));e.status=r.status;throw e;}const j=await r.json();return j.content&&j.content.sha||sha;}
+
+// ---- 복수 선택 드롭다운 ----
+const MS={};
+function msInit(id,opts,set,onChange){const el=$('#'+id),pan=el.querySelector('.msp');MS[id]={el,opts,set,onChange};pan.innerHTML=`<div class="msx"><span>여러 개를 함께 고를 수 있습니다</span><button type="button" data-clear>모두 해제</button></div>`+opts.map(([k,l])=>`<label><input type="checkbox" value="${esc(k)}"${set.has(k)?' checked':''}> ${esc(l)}</label>`).join('');msLabel(id);}
+function msLabel(id){const {el,opts,set}=MS[id];const btn=el.querySelector('.msb'),t=el.dataset.title;const names=opts.filter(([k])=>set.has(k)).map(([,l])=>l.replace(/ \(.*\)$/,''));btn.innerHTML=set.size?`${esc(t)}: <b>${esc(names.join(' + '))}</b>`:`${esc(t)}: 전체`;btn.title=set.size?names.join(' + '):t+' 전체';el.classList.toggle('sel',set.size>0);el.querySelectorAll('.msp label').forEach(l=>{const c=l.querySelector('input');c.checked=set.has(c.value);l.classList.toggle('on',c.checked);});}
+function msSet(id,keys){const m=MS[id];m.set.clear();(keys||[]).forEach(k=>m.set.add(k));msLabel(id);}
+
+// ---- 상품마스터 (master.enc: master_compute.js 가 사이트 원천에서 품번별로 만든 자료) ----
+// 기획전 참여 표시는 엑셀에 쓰지 않고 campaigns.json(같은 비밀번호로 암호화) 에 페이지가 직접 저장합니다.
+//   campaigns: { id: {id, plat, name, from, to, kind:text, hide, updatedAt, deleted?, items:{ 품번키: [값, 적은시각] }} }
+//   입력은 모두 글자 칸(예: 10%, 5%). 이전 방식(kind check|rate|qty)으로 적은 값은 그대로 읽어 글자로 보임(rate 의 숫자는 뒤에 % 를 붙임)
+const MD={doc:null,tab:'all',items:[],q:'',sets:{sea:new Set(),yr:new Set(),src:new Set(),kind:new Set(),st:new Set(),slow:new Set()},groups:new Set(),sort:'',dir:1,view:[],seq:[],shown:0,preset:'30',from:'',to:'',sales:{},camps:{},campSha:null,campSel:'',campOnly:false,dirty:false,editId:null,lastSaved:null};
+const MCOLS=[
+{k:'sea',l:'시즌',g:'기본',t:'text',s:'셀메이트'},{k:'yr',l:'년도',g:'기본',t:'id',s:'셀메이트'},{k:'src',l:BR.srcLbl,g:'기본',t:'text',s:BR.srcS},{k:'ven',l:'업체명',g:'기본',t:'text',s:'셀메이트'},{k:'kind',l:'상품구분',g:'기본',t:'text',s:'직진 · 스토어'},{k:'st',l:'판매상태',g:'기본',t:'text',s:'플랫폼 종합'},{k:'slow',l:'부진 여부',g:'기본',t:'text',s:'직접 입력 · 눌러서 바꿈'},...(BRAND==='dali'?[{k:'excl',l:'자사몰 단독',g:'기본',t:'text',s:'자사몰 단독프로모션 메뉴'}]:[]),{k:'cat',l:'카테고리',g:'기본',t:'text',s:'지그재그'},{k:'reg',l:'등록일',g:'기본',t:'text',s:'지그재그'},
+{k:'$kkQ',l:'직진 판매량',g:'판매',t:'int',s:'선택 기간'},{k:'$kkA',l:'직진 매출',g:'판매',t:'int',s:'선택 기간'},{k:'$smQ',l:'셀메 판매량',g:'판매',t:'int',s:'직진·도착보장 출고 제외'},{k:'$smA',l:'셀메 매출',g:'판매',t:'int',s:'선택 기간'},{k:'$abQ',l:'에이블리 판매량',g:'판매',t:'int',s:'도착보장'},{k:'$abA',l:'에이블리 매출',g:'판매',t:'int',s:'선택 기간'},{k:'$q',l:'판매량 합계',g:'판매',t:'int',s:'선택 기간'},{k:'$a',l:'매출 합계',g:'판매',t:'int',s:'선택 기간'},
+...BR.price.map(p=>({k:p.k,l:p.l,g:'가격',t:p.t||'int',s:p.s})),
+{k:'jjStock',l:'직진 재고',g:'재고',t:'int',s:'카카오'},{k:'smAvail',l:'셀메 가용재고',g:'재고',t:'int',s:'셀메이트'},{k:'smStock',l:'셀메 현재재고',g:'재고',t:'int',s:'셀메이트'},{k:'stock',l:'전체 재고',g:'재고',t:'int',s:'셀메 현재 + 직진'},{k:'unsent',l:'미발송',g:'재고',t:'int',s:'셀메이트'},{k:'incoming',l:'입고예정',g:'재고',t:'int',s:'셀메이트'},{k:'soldout',l:'품절여부',g:'재고',t:'text',s:'셀메이트'},
+{k:'zzNo',l:'스토어 상품번호',g:'지그재그',t:'id'},{k:'jjNo',l:'직진 상품번호',g:'지그재그',t:'id'},{k:'zzPrice',l:'스토어 판매가',g:'지그재그',t:'int'},{k:'zzSale',l:'할인 판매가',g:'지그재그',t:'int'},{k:'zzRate',l:'할인율',g:'지그재그',t:'pct'},{k:'zzSt',l:'스토어 판매상태',g:'지그재그',t:'text'},{k:'jjSt',l:'직진 판매상태',g:'지그재그',t:'text'},
+{k:'abNo',l:'에이블리 상품번호',g:'에이블리',t:'id'},{k:'abPrice',l:'판매가',g:'에이블리',t:'int'},{k:'abFinal',l:'최종 판매가(앱)',g:'에이블리',t:'int'},{k:'abRate',l:'할인율',g:'에이블리',t:'pct'},{k:'abMult',l:'배수',g:'에이블리',t:'dec',s:'최종가 ÷ 원가'},{k:'abStock',l:'재고',g:'에이블리',t:'int'},{k:'abDisp',l:'진열',g:'에이블리',t:'text'},{k:'abSoldout',l:'품절',g:'에이블리',t:'text'},
+{k:'qnNo',l:'퀸잇 상품코드',g:'퀸잇',t:'id',s:'퀸잇'}];
+const colLbl=k=>{const c=MCOLS.find(c=>c.k===k);return c?c.l:k;};
+const SKEY={'$kkQ':0,'$kkA':1,'$smQ':2,'$smA':3,'$abQ':4,'$abA':5};
+function mGet(x,k){if(k[0]!=='$')return x[k];const s=MD.sales[x.code];if(!s)return 0;if(k==='$q')return s[0]+s[2]+s[4];if(k==='$a')return s[1]+s[3]+s[5];return s[SKEY[k]];}
+function mRangeCalc(){const D=(MD.doc&&MD.doc.daily)||{};const o={};for(const d in D){if(d<MD.from||d>MD.to)continue;const day=D[d];for(const c in day){const a=day[c],s=o[c]||(o[c]=[0,0,0,0,0,0]);for(let i=0;i<6;i++)s[i]+=a[i]||0;}}MD.sales=o;}
+function mPresetDates(p){const t=todayKst(),d=new Date(t+'T00:00:00Z');const iso=x=>x.toISOString().slice(0,10);const cov=MD.doc&&MD.doc.coverage;if(p==='1')return [t,t];if(p==='7'||p==='30'){const f=new Date(d);f.setUTCDate(f.getUTCDate()-(+p-1));return [iso(f),t];}if(p==='cur')return [t.slice(0,8)+'01',t];if(p==='prev'){const f=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()-1,1)),l=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),0));return [iso(f),iso(l)];}if(p==='all')return [cov?cov.from:t,cov?cov.to:t];return null;}
+function mRangeApply(save){if(MD.preset!=='custom'){const r=mPresetDates(MD.preset);if(r){MD.from=r[0];MD.to=r[1];}}$('#mPreset').value=MD.preset;$('#mFrom').value=MD.from;$('#mTo').value=MD.to;const cov=MD.doc&&MD.doc.coverage;const out=cov&&(MD.from<cov.from||MD.to>cov.to);$('#mRangeNote').innerHTML=`판매 열은 <b>${esc(MD.from)} ~ ${esc(MD.to)}</b> 합계`+(cov?` · 이력 ${esc(cov.from)} ~ ${esc(cov.to)}${out?' <span style="color:var(--warn)">(이력 밖 기간은 0으로 보입니다)</span>':''}`:'');if(save)ls('clv_jj_mrange_'+BRAND,JSON.stringify({preset:MD.preset,from:MD.from,to:MD.to}));mRangeCalc();}
+const MC={path:'jikjin/'+BRAND+'/campaigns.json',url:BRAND+'/campaigns.json',ls:'clv_jj_camps_'+BRAND};
+// 부진 분류 직접 입력 (2026-10-29): 엑셀 마스터를 더 이상 반영하지 않으므로 부진 · 정상은 페이지에서 품번마다 고름
+//   slow.json(같은 비밀번호로 암호화) = { 품번: [값('부진'|'정상'|''), 적은 시각] }. 빈 값은 기본값으로 되돌린 기록(다른 기기 입력도 지우려고 남김)
+//   기본값 x.slow0 = 계산 자료의 부진 여부(고정된 엑셀 마지막 분류, 없으면 정상). 같은 품번은 나중에 적은 값이 이김
+const SL={path:'jikjin/'+BRAND+'/slow.json',url:BRAND+'/slow.json',ls:'clv_jj_slow_'+BRAND};
+MD.slowEd={};MD.slowSha=null;
+function slowLoadLocal(){try{const j=JSON.parse(ls(SL.ls)||'{}');return j&&typeof j==='object'?j:{};}catch(e){return {};}}
+function slowSaveLocal(){ls(SL.ls,JSON.stringify(MD.slowEd));}
+function slowMerge(a,b){const o=Object.assign({},a||{});for(const k in (b||{})){const p=o[k],q=b[k];if(!q)continue;if(!p||(q[1]||'')>(p[1]||''))o[k]=q;}return o;}
+const slowEdVal=x=>{const e=MD.slowEd[x.key];return e&&(e[0]==='부진'||e[0]==='정상')?e[0]:null;};
+function slowApply(){MD.items.forEach(x=>{if(x.slow0===undefined)x.slow0=x.slow||'정상';x.slow=slowEdVal(x)||x.slow0;});}
+function slowOpts(){const m={};MD.items.forEach(x=>{const v=x.slow||'';m[v]=(m[v]||0)+1;});msInit('msMSlow',Object.keys(m).sort((a,b)=>a.localeCompare(b,'ko')).map(v=>[v,(v||'(없음)')+' ('+fmt(m[v])+')']),MD.sets.slow,mTable);}
+async function slowLoadRemote(){let j=null;if(S.token){const g=await ghGetPath(SL.path);MD.slowSha=g.sha;j=g.json;}else{try{const r=await fetch(SL.url+'?t='+Date.now(),{cache:'no-store'});if(r.ok)j=await r.json();}catch(e){}}if(!j)return {};try{return await decJson(j,S.pw);}catch(e){throw new Error('저장된 부진 입력을 열지 못했습니다 (비밀번호가 다른 기기에서 저장된 것일 수 있음)');}}
+async function slowPut(){if(!Object.keys(MD.slowEd).length&&MD.slowSha==null)return;const pull=async()=>{const g=await ghGetPath(SL.path);MD.slowSha=g.sha;if(g.json)MD.slowEd=slowMerge(await decJson(g.json,S.pw),MD.slowEd);};const put=async()=>{MD.slowSha=await ghPutPath(SL.path,await encJson(MD.slowEd,S.pw),MD.slowSha,`부진 입력 (${CFG.label})`);};try{if(MD.slowSha==null)await pull();await put();}catch(e){if(e.status===409||e.status===422){await pull();await put();}else throw e;}slowSaveLocal();slowApply();}
+// slowSet(품번 키 목록, '부진'|'정상'|null): 기본값과 같으면 직접 입력을 지운 것으로 기록. 바뀐 품번 수를 돌려줌
+function slowSet(keys,v){const t=new Date().toISOString();let n=0;keys.forEach(k=>{const x=MD.byKey.get(k);if(!x)return;const val=v==null||v===x.slow0?'':v;const cur=MD.slowEd[k];if(cur?cur[0]===val:val==='')return;MD.slowEd[k]=[val,t];n++;});if(!n)return 0;slowApply();MD.dirty=true;slowSaveLocal();mStatus();return n;}
+const campVal=(c,key)=>{const it=c.items&&c.items[key];return it&&it[0]!=null&&it[0]!==''&&it[0]!==false?it[0]:null;};
+const campTxt=(c,key)=>{const v=campVal(c,key);return v==null?'':c.kind==='rate'&&typeof v==='number'?v+'%':String(v);};
+const campNum=(c,key)=>{const v=campVal(c,key);if(v==null)return null;const n=parseFloat(String(v).replace(/,/g,''));return isNaN(n)?String(v):n;};
+const campLbl=c=>`${c.plat} · ${c.name}${c.from||c.to?' ('+(c.from||'').slice(5).replace('-','/')+'~'+(c.to||'').slice(5).replace('-','/')+')':''}`;
+const campList=()=>Object.values(MD.camps).filter(c=>!c.deleted).sort((a,b)=>(b.from||'').localeCompare(a.from||'')||(b.updatedAt||'').localeCompare(a.updatedAt||''));
+function campLoadLocal(){try{const j=JSON.parse(ls(MC.ls)||'{}');return j&&typeof j==='object'?j:{};}catch(e){return {};}}
+function campSaveLocal(){ls(MC.ls,JSON.stringify(MD.camps));}
+function campMerge(a,b){const o={};new Set([...Object.keys(a||{}),...Object.keys(b||{})]).forEach(id=>{const x=a&&a[id],y=b&&b[id];if(!x||!y){o[id]=x||y;return;}const meta=(y.updatedAt||'')>(x.updatedAt||'')?y:x;const m=Object.assign({},meta,{items:{}});if(m.deleted){o[id]=m;return;}new Set([...Object.keys(x.items||{}),...Object.keys(y.items||{})]).forEach(k=>{const p=x.items&&x.items[k],q=y.items&&y.items[k];m.items[k]=!p?q:!q?p:((q[1]||'')>(p[1]||'')?q:p);});o[id]=m;});return o;}
+async function campLoadRemote(){let j=null;if(S.token){const g=await ghGetPath(MC.path);MD.campSha=g.sha;j=g.json;}else{try{const r=await fetch(MC.url+'?t='+Date.now(),{cache:'no-store'});if(r.ok)j=await r.json();}catch(e){}}if(!j)return {};try{return await decJson(j,S.pw);}catch(e){throw new Error('저장된 기획전 선택을 열지 못했습니다 (비밀번호가 다른 기기에서 저장된 것일 수 있음)');}}
+async function campSaveRemote(){if(!S.token){campSaveLocal();MD.dirty=false;mStatus();toast('이 기기에만 저장했습니다 (GitHub 미연결 · [GitHub 연결] 을 눌러 연결)');return;}const b=$('#mSave');b.disabled=true;b.textContent='저장 중…';try{const pull=async()=>{const g=await ghGetPath(MC.path);MD.campSha=g.sha;if(g.json)MD.camps=campMerge(await decJson(g.json,S.pw),MD.camps);};const put=async()=>{MD.campSha=await ghPutPath(MC.path,await encJson(MD.camps,S.pw),MD.campSha,`기획전 선택 (${CFG.label})`);};try{if(MD.campSha==null)await pull();await put();}catch(e){if(e.status===409||e.status===422){await pull();await put();}else throw e;}await slowPut();slowOpts();campSaveLocal();MD.dirty=false;MD.lastSaved=new Date();masterRender();toast('GitHub 에 저장했습니다');}catch(e){toast(e.message||String(e),4000);}finally{b.disabled=false;b.textContent='저장';}}
+function campSet(c,key,v){c.items=c.items||{};c.items[key]=[v,new Date().toISOString()];MD.dirty=true;campSaveLocal();mKpis();mStatus();}
+
+// ---- 자료 열기 ----
+async function open(pw){const r=await fetch(CFG.dataUrl,{cache:'no-cache'});if(!r.ok)throw new Error('상품마스터 자료가 아직 없습니다 ('+r.status+'). 다음 자동 갱신 뒤에 다시 열어 주세요.');let plain;try{plain=await decBytes(await r.arrayBuffer(),pw);}catch(e){throw new Error('비밀번호가 맞지 않습니다.');}const doc=JSON.parse(new TextDecoder().decode(plain));if(!doc.daily&&doc.cols)throw new Error('이전 형식(엑셀 시트 복사본)의 자료입니다. 다음 자동 갱신 뒤에 다시 열어 주세요.');S.pw=pw;MD.doc=doc;MD.items=doc.items||[];MD.items.forEach((x,i)=>{x.i=i;x.key=String(x.code);});MD.keys=new Set(MD.items.map(x=>x.key));MD.byKey=new Map(MD.items.map(x=>[x.key,x]));}
+async function start(pw,remember){const btn=$('#go');btn.disabled=true;btn.textContent='여는 중…';$('#loginErr').textContent='';try{await open(pw);try{sessionStorage.setItem('clv_pw_s',pw);}catch(e){}ls('clv_pw',remember?pw:null);$('#login').hidden=true;S.token=ls(CFG.lsToken)||'';try{const r=JSON.parse(ls('clv_jj_mrange_'+BRAND)||'null');if(r&&r.preset){MD.preset=r.preset;MD.from=r.from||'';MD.to=r.to||'';}}catch(e){}try{const g=JSON.parse(ls('clv_jj_mgroups_'+BRAND)||'[]');if(Array.isArray(g))g.forEach(x=>MD.groups.add(x));}catch(e){}colsLoad();colsBtn();mRangeApply(false);MD.camps=campLoadLocal();MD.slowEd=slowLoadLocal();slowApply();$('#app').hidden=false;header();mTabsInit();masterInit();try{const rc=await campLoadRemote();MD.camps=campMerge(MD.camps,rc);campSaveLocal();masterRender();}catch(e){toast(e.message,4000);}try{const rs=await slowLoadRemote();MD.slowEd=slowMerge(MD.slowEd,rs);slowSaveLocal();slowApply();slowOpts();masterRender();}catch(e){toast(e.message,4000);}}catch(e){$('#loginErr').textContent=e.message||String(e);if(/비밀번호/.test(e.message||''))ls('clv_pw',null);}finally{btn.disabled=false;btn.textContent='열기';}}
+function header(){const d=MD.doc,F=d.files||{};$('#sub').innerHTML=`자료 생성 ${esc(d.generated||'-')} · <a href="index.html?brand=${esc(BRAND)}">직진 재고·출고 대시보드</a> · <a href="ably.html?brand=${esc(BRAND)}">에이블리 도착보장</a> · <a href="../index.html">매출보고 페이지</a>`;const t=$('#times');const L=[['셀메 재고',F.sellmate_stock],['카카오 상품',F.kakao_products],['직진 재고',F.kakao_stock],['에이블리 상품',F.ably_goods],['퀸잇 상품',F.queenit],['자사몰 단독 메뉴',F.dalimall],['엑셀 마스터(고정)',F.excel]].filter(x=>x[1]&&x[1].time);t.innerHTML=L.map(x=>`${esc(x[0])} <b>${esc(x[1].time)}</b>`).join('');t.hidden=!L.length;}
+const SEA_ORDER=['봄','여름','가을','겨울','사계절'];
+function groupsSave(){ls('clv_jj_mgroups_'+BRAND,JSON.stringify([...MD.groups]));mTable();}
+function masterInit(){const vals=k=>{const m={};MD.items.forEach(x=>{const v=x[k]==null?'':String(x[k]);m[v]=(m[v]||0)+1;});return Object.keys(m).sort((a,b)=>k==='yr'?b.localeCompare(a):k==='sea'?(SEA_ORDER.indexOf(a)+1||99)-(SEA_ORDER.indexOf(b)+1||99):k==='st'?(a==='판매중'?-1:b==='판매중'?1:a.localeCompare(b,'ko')):a.localeCompare(b,'ko')).map(v=>[v,(v||'(없음)')+' ('+fmt(m[v])+')']);};
+msInit('msMSea',vals('sea'),MD.sets.sea,mTable);msInit('msMYr',vals('yr'),MD.sets.yr,mTable);msInit('msMSrc',vals('src'),MD.sets.src,mTable);msInit('msMKind',vals('kind'),MD.sets.kind,mTable);msInit('msMSt',vals('st'),MD.sets.st,mTable);msInit('msMSlow',vals('slow'),MD.sets.slow,mTable);
+const gs=[];MCOLS.forEach(c=>{if(!gs.includes(c.g))gs.push(c.g);});[...MD.groups].forEach(g=>{if(!gs.includes(g))MD.groups.delete(g);});msInit('msMG',gs.map(g=>[g,g+' ('+MCOLS.filter(c=>c.g===g).length+'열)']),MD.groups,groupsSave);
+const F=MD.doc.files||{};const src=[['셀메이트 재고',F.sellmate_stock],['카카오 상품 목록',F.kakao_products],['직진 재고',F.kakao_stock],['에이블리 상품 목록',F.ably_goods],['퀸잇 상품 목록',F.queenit],['자사몰 단독 메뉴',F.dalimall],['엑셀 마스터(고정)',F.excel]].filter(x=>x[1]).map(x=>`${esc(x[0])} <b>${esc(x[1].time||'')}</b>`).join(' · ');
+$('#mNote').innerHTML=`품번 ${fmt(MD.doc.count)}개 (원천 전체 ${fmt(MD.doc.allCount||MD.doc.count)}개 중 재고·판매중·직진·최근 판매·최근 30일 신규 등록 중 하나라도 해당하는 것). 원천: ${src}. ${esc(BR.priceNote)} 모든 값은 셀메이트 · 카카오 · 에이블리 · 퀸잇 사이트에서 받은 자료이며 엑셀 마스터 파일은 쓰지 않습니다(사이트에 값이 없으면 빈칸). 퀸잇 상품코드는 퀸잇 상품 목록(퀸잇에 로그인할 때 받음)의 판매자 상품코드로 맞춥니다. 부진 여부는 이 페이지에서 직접 입력합니다. 판매 열은 위의 기간을 바꾸면 다시 계산되고, 판매 이력은 자동 갱신 때마다 쌓입니다. 열 제목을 누르면 정렬되고 "열 묶음"에서 보일 묶음을 고릅니다. [열 설정]에서는 ☰ 를 끌어 열 순서를 바꾸거나 체크를 풀어 열을 숨길 수 있습니다(고른 묶음과 열 설정은 이 기기에 기억됨). 표 위의 가로 막대로도 표를 옆으로 넘길 수 있습니다. 표는 ${fmt(PAGE)}품번씩 이어서 보이며 CSV·엑셀 내려받기는 항상 전체입니다. 기획전 참여 표시는 이 페이지(저장 시 GitHub)에만 남습니다.`;
+masterRender();}
+function mFiltered(skip,nosort){const q=MD.q.trim().toLowerCase();const cs=MD.campSel&&MD.camps[MD.campSel];let v=MD.items.filter(x=>{if(MD.tab==='excl'&&!x.excl)return false;if(q&&!((x.code||'')+' '+(x.name||'')+' '+(x.ven||'')+' '+(x.zzNo||'')+' '+(x.jjNo||'')+' '+(x.abNo||'')+' '+(x.qnNo||'')+' '+(x.smCodes||'')+' '+(x.zzCodes||'')+' '+(x.abCodes||'')+' '+(x.jjCodes||'')).toLowerCase().includes(q))return false;for(const k in MD.sets){const s=MD.sets[k];if(s.size&&!s.has(x[k]==null?'':String(x[k])))return false;}if(MD.campOnly&&cs&&campVal(cs,x.key)==null)return false;if(!cfPass(x,skip))return false;return true;});if(nosort)return v;
+if(MD.sort){const k=MD.sort,dir=MD.dir,camp=k.startsWith('camp:')&&MD.camps[k.slice(5)];const g=camp?x=>campNum(camp,x.key):x=>mGet(x,k);v=v.slice().sort((a,b)=>{const p=g(a),q=g(b);if(p==null&&q==null)return a.i-b.i;if(p==null)return 1;if(q==null)return -1;const pn=typeof p==='number',qn=typeof q==='number';if(pn&&qn)return dir*(q-p)||a.i-b.i;if(pn!==qn)return pn?-1:1;return dir*String(p).localeCompare(String(q),'ko')||a.i-b.i;});}return v;}
+// ---- 열 제목 필터 (엑셀 자동 필터처럼): MD.cf[열 키] = {vals: 보일 값(화면 글자) Set 또는 null, min, max} ----
+MD.cf={};
+const cfCol=k=>MCOLS.find(c=>c.k===k);
+const cfNum=k=>{const c=cfCol(k);return !!c&&c.t!=='text'&&c.t!=='id';};
+const cfLbl=k=>k==='code'?'품번':k==='name'?'상품명':k.startsWith('camp:')?((MD.camps[k.slice(5)]||{}).name||'기획전'):colLbl(k);
+function cfRaw(x,k){if(k==='code')return x.code;if(k==='name')return x.name;if(k.startsWith('camp:')){const c=MD.camps[k.slice(5)];return c?campTxt(c,x.key):'';}return mGet(x,k);}
+function cfTxt(x,k){const v=cfRaw(x,k);if(v==null||v==='')return '';if(typeof v!=='number')return String(v);return String(mVal(cfCol(k)||{t:'int'},v));}
+function cfPass(x,skip){for(const k in MD.cf){if(k===skip)continue;const f=MD.cf[k];if(f.vals&&!f.vals.has(cfTxt(x,k)))return false;if(f.min!=null||f.max!=null){const v=cfRaw(x,k);if(typeof v!=='number')return false;const n=(cfCol(k)||{}).t==='pct'?v*100:v;if(f.min!=null&&n<f.min)return false;if(f.max!=null&&n>f.max)return false;}}return true;}
+let CFP=null;
+function cfClose(){if(CFP){CFP.remove();CFP=null;}}
+function cfOpen(k,btn){cfClose();const base=mFiltered(k,true),isNum=cfNum(k),pct=(cfCol(k)||{}).t==='pct',cnt=new Map();base.forEach(x=>{const t=cfTxt(x,k);cnt.set(t,(cnt.get(t)||0)+1);});
+  const vals=[...cnt.keys()];if(isNum){const nv=t=>t===''?Infinity:parseFloat(t.replace(/[,%]/g,''));vals.sort((a,b)=>nv(a)-nv(b));}else vals.sort((a,b)=>a===''?1:b===''?-1:a.localeCompare(b,'ko'));
+  const f=MD.cf[k]||{},sel=new Set(f.vals?vals.filter(v=>f.vals.has(v)):vals);let q='',shown=[];
+  const p=CFP=document.createElement('div');p.className='cfp';p.dataset.k=k;p.setAttribute('role','dialog');
+  p.innerHTML=`<div class="cfh"><b>${esc(cfLbl(k))}</b><span>값 ${fmt(vals.length)}개</span></div><div class="cfs"><button type="button" data-s="a">▲ 오름차순</button><button type="button" data-s="d">▼ 내림차순</button></div>`+(isNum?`<div class="cfr">범위 <input type="number" class="mn" placeholder="이상" value="${f.min!=null?f.min:''}"> ~ <input type="number" class="mx" placeholder="이하" value="${f.max!=null?f.max:''}">${pct?' %':''}</div>`:'')+`<input type="search" class="cfq" placeholder="값 검색" autocomplete="off"><label class="all"><input type="checkbox"><span class="v">(모두 선택)</span></label><div class="cfl"></div><div class="cfb"><button type="button" class="btn sub" data-a="clear">필터 지우기</button><button type="button" class="btn sub" data-a="cancel">취소</button><button type="button" class="btn pri" data-a="ok">확인</button></div>`;
+  document.body.appendChild(p);
+  const draw=()=>{const ql=q.toLowerCase();shown=vals.map((v,i)=>i).filter(i=>!ql||(vals[i]||'(빈 칸)').toLowerCase().includes(ql));const lim=shown.slice(0,1000);p.querySelector('.cfl').innerHTML=lim.map(i=>`<label><input type="checkbox" data-i="${i}"${sel.has(vals[i])?' checked':''}><span class="v">${vals[i]===''?'<i>(빈 칸)</i>':esc(vals[i])}</span><small>${fmt(cnt.get(vals[i]))}</small></label>`).join('')+(shown.length>lim.length?`<div class="cfm">값이 많아 ${fmt(lim.length)}개만 보입니다 · 검색으로 좁혀 주세요</div>`:'')+(!shown.length?'<div class="cfm">맞는 값이 없습니다</div>':'');const all=p.querySelector('.all input');const n=shown.filter(i=>sel.has(vals[i])).length;all.checked=shown.length>0&&n===shown.length;all.indeterminate=n>0&&n<shown.length;};
+  draw();
+  const r=btn.getBoundingClientRect();p.style.left=Math.max(8,Math.min(r.left,innerWidth-p.offsetWidth-8))+'px';const top=r.bottom+4;p.style.top=(top+p.offsetHeight>innerHeight-8?Math.max(8,innerHeight-8-p.offsetHeight):top)+'px';
+  p.querySelector('.cfq').addEventListener('input',e=>{q=e.target.value.trim();draw();});
+  p.querySelector('.all input').addEventListener('change',e=>{shown.forEach(i=>{if(e.target.checked)sel.add(vals[i]);else sel.delete(vals[i]);});draw();});
+  p.querySelector('.cfl').addEventListener('change',e=>{const i=e.target.dataset.i;if(i==null)return;if(e.target.checked)sel.add(vals[+i]);else sel.delete(vals[+i]);draw();});
+  p.querySelector('.cfs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const asc=b.dataset.s==='a',numLike=isNum||k.startsWith('camp:');MD.sort=k;MD.dir=numLike?(asc?-1:1):(asc?1:-1);cfClose();mTable();});
+  p.querySelector('.cfb').addEventListener('click',e=>{const a=(e.target.closest('button')||{}).dataset;if(!a||!a.a)return;if(a.a==='cancel')return cfClose();if(a.a==='clear'){delete MD.cf[k];cfClose();mTable();return;}
+    let allow=q?new Set(shown.map(i=>vals[i]).filter(v=>sel.has(v))):new Set(sel);const num=c=>{const el=p.querySelector(c);if(!el||el.value.trim()==='')return null;const n=parseFloat(el.value);return isNaN(n)?null:n;};const mn=num('.mn'),mx=num('.mx');
+    if(!allow.size)return toast('값을 하나 이상 골라 주세요');
+    if(allow.size===vals.length&&vals.every(v=>allow.has(v))&&mn==null&&mx==null)delete MD.cf[k];else MD.cf[k]={vals:allow.size===vals.length?null:allow,min:mn,max:mx};cfClose();mTable();});
+  p.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT'&&e.target.type!=='checkbox'){e.preventDefault();p.querySelector('[data-a=ok]').click();}});
+  setTimeout(()=>{const s=p.querySelector(isNum?'.mn':'.cfq');if(s)s.focus();},0);}
+function cfSummary(){const ks=Object.keys(MD.cf),b=$('#mCfClr');b.hidden=!ks.length;b.textContent='열 필터 '+ks.length+'개 해제';b.title='필터가 걸린 열: '+ks.map(cfLbl).join(', ');}
+const cfBtn=k=>`<button type="button" class="cfbtn${MD.cf[k]?' on':''}" data-fk="${esc(k)}" title="${esc(cfLbl(k))} 필터" aria-label="${esc(cfLbl(k))} 필터">▾</button>`;
+function mVal(c,v){if(v==null||v==='')return '';if(typeof v!=='number')return esc(v);if(c.t==='id')return String(v);if(c.t==='pct')return (Math.round(v*1000)/10)+'%';if(c.t==='dec')return v.toFixed(2);if(Number.isInteger(v))return fmt(v);return (Math.round(v*100)/100).toLocaleString('ko-KR');}
+const G_CLS={기본:'gk',가격:'gp',에이블리:'ga',지그재그:'gz',판매:'gs'};
+// 열 설정(2026-10-28): MD.colOrder = 사용자가 끌어서 정한 열 키 순서(null 이면 기본 순서), MD.colHide = 숨긴 열 키. 이 기기 localStorage clv_jj_mcols_<브랜드> 에 기억
+// 나중에 MCOLS 에 새 열이 생기면 기본 순서에서 바로 앞 열 다음 자리에 끼워 넣음
+MD.colOrder=null;MD.colHide=new Set();
+const COLS_LS='clv_jj_mcols_'+BRAND;
+function colsLoad(){try{const j=JSON.parse(ls(COLS_LS)||'null');if(j){if(Array.isArray(j.order))MD.colOrder=j.order.filter((k,i,a)=>typeof k==='string'&&a.indexOf(k)===i);if(Array.isArray(j.hide))j.hide.forEach(k=>MD.colHide.add(k));}}catch(e){}}
+function colsOrdered(){if(!MD.colOrder)return MCOLS.slice();const by=new Map(MCOLS.map(c=>[c.k,c]));const out=MD.colOrder.filter(k=>by.has(k)).map(k=>by.get(k));const have=new Set(out.map(c=>c.k));MCOLS.forEach((c,i)=>{if(have.has(c.k))return;let pos=0;for(let j=i-1;j>=0;j--){const p=out.findIndex(x=>x.k===MCOLS[j].k);if(p>=0){pos=p+1;break;}}out.splice(pos,0,c);have.add(c.k);});return out;}
+const colsCustomOrder=()=>!!MD.colOrder&&colsOrdered().map(c=>c.k).join('|')!==MCOLS.map(c=>c.k).join('|');
+function colsSave(){const keys=new Set(MCOLS.map(c=>c.k));[...MD.colHide].forEach(k=>{if(!keys.has(k))MD.colHide.delete(k);});const ord=colsCustomOrder();if(!ord)MD.colOrder=null;if(!ord&&!MD.colHide.size)ls(COLS_LS,null);else ls(COLS_LS,JSON.stringify({order:ord?MD.colOrder:null,hide:[...MD.colHide]}));colsBtn();}
+function colsBtn(){const b=$('#mCols'),n=MCOLS.filter(c=>MD.colHide.has(c.k)).length,ord=colsCustomOrder();b.textContent='열 설정'+(n?' · 숨김 '+n:'')+(ord?' · 순서 바꿈':'');b.classList.toggle('cust',!!(n||ord));}
+function mShowCols(){return colsOrdered().filter(c=>!MD.colHide.has(c.k)&&(!MD.groups.size||MD.groups.has(c.g)));}
+// 기획전 열은 화면 오른쪽에 붙어(sticky) 표를 어디로 넘겨도 보이고, 열 순서로는 가격 묶음 끝(배수 열)과 직진 재고·셀메 가용·셀메 현재 재고 다음에 둠(그 열들을 숨겼으면 가격 묶음 끝, 가격 묶음도 숨겼으면 맨 끝). 묶음이 바뀌는 첫 열에는 구분선(gf)
+function mSeq(cols,camps){const s=cols.map((c,i)=>({col:c,gf:i>0&&cols[i-1].g!==c.g}));if(!camps.length)return s;let i=-1;cols.forEach((c,j)=>{if(['listMult','jjStock','smAvail','smStock'].includes(c.k))i=j;});if(i<0)for(let j=cols.length-1;j>=0;j--)if(cols[j].g==='가격'){i=j;break;}if(i<0)i=cols.length-1;s.splice(i+1,0,...camps.map((c,k)=>({camp:c,r:(camps.length-1-k)*104})));if(s[i+1+camps.length])s[i+1+camps.length].gf=true;return s;}
+function campCell(e,x){const c=e.camp,v=campVal(c,x.key);return `<td class="ci${v!=null?' has':''}" data-c="${esc(c.id)}" style="--r:${e.r}px"><input type="text" maxlength="40" autocomplete="off" placeholder="예: 10%" value="${esc(campTxt(c,x.key))}" aria-label="${esc(c.name)} 입력"></td>`;}
+function mRow(x,seq){const sea=x.sea?`<span class="sea ${SEA_CLS[x.sea]||''}">${esc((x.yr?String(x.yr).replace(/[^0-9]/g,'').slice(2)+' ':'')+x.sea)}</span>`:'';const fb=x.fb||[];const cs=[...new Set([x.smCodes,x.zzCodes,x.abCodes,x.jjCodes].filter(Boolean))];return `<tr data-key="${esc(x.key)}"><td class="c1" title="${esc(cs.length?x.code+' · 사이트에 적힌 품번: '+cs.join(' / '):x.code)}"><b>${esc(x.code)}</b><small>${esc(x.kind||'-')} · ${esc(x.st||'-')}${x.slow==='부진'?' · <b class="slowb">부진</b>':''}</small></td><td class="nm"><span class="t" title="${esc(x.name||'')}">${esc(x.name||'')}</span><small>${sea}${esc(x.ven||'-')}${x.src?' · '+esc(x.src):''}${x.cat?' · '+esc(x.cat):''}</small></td>${seq.map(e=>{if(e.camp)return campCell(e,x);const c=e.col;const v=mGet(x,c.k);const tx=typeof v!=='number';const cls=[];if(e.gf)cls.push('gf');let title='';if(tx)cls.push('tx');if(c.k[0]==='$'){cls.push('gs');if(!v)cls.push('z');}const viaList=c.k==='mall'&&fb.includes('mall=list'),viaSm=c.k==='mall'&&fb.includes('mall=sm');if(fb.includes(c.k)||viaList||viaSm){cls.push('fb');title=viaList?'사이트에 값이 없어 정상가를 씀':viaSm?'카카오 스토어에 없는 상품이라 셀메이트 판매단가를 씀':c.k==='qnNo'?'퀸잇 상품 목록에 이 품번으로 판매중인 상품이 없어 엑셀 마스터의 값을 씀':'사이트에 값이 없어 엑셀 마스터의 마지막 값을 씀';}if(c.k==='abNo'&&x.abVia){cls.push('via');title=x.abViaName?'에이블리에는 상품명이 같은 품번 '+x.abVia+' 로 등록되어 있어 그 번호를 씀 (확인 필요)':'에이블리에는 같은 카카오 상품의 품번 '+x.abVia+' 로 등록되어 있어 그 번호를 씀';}if(x.xd&&x.xd[c.k]!=null){cls.push('xd');title='엑셀 마스터 값: '+fmt(x.xd[c.k])+' ('+c.l+')';}if(c.k==='slow'){if(v==='부진')cls.push('slow');const ed=slowEdVal(x),e2=MD.slowEd[x.key];title=(ed?'직접 입력: '+ed+(e2&&e2[1]?' ('+new Date(e2[1]).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})+')':'')+' · ':'')+'기본값: '+x.slow0+' (엑셀 마지막 분류를 옮겨 둔 시작값)'+' · 누르면 부진 ↔ 정상';}if(!title&&tx&&v)title=String(v);return `<td class="${cls.join(' ')}"${title?` title="${esc(title)}"`:''}>${c.k==='slow'?`<button type="button" class="slb" data-sl="${esc(x.key)}">${esc(v||'정상')}${slowEdVal(x)?'<i>●</i>':''}</button>`:mVal(c,v)}</td>`;}).join('')}</tr>`;}
+// mTable: "표에서 숨기기"한 기획전도 위에서 고르면 열을 보임. 행은 PAGE 개씩 그리고 아래로 내리면 이어서 그림(표가 가벼워짐)
+function mTable(){const cols=mShowCols(),camps=campList().filter(c=>!c.hide||c.id===MD.campSel),seq=MD.seq=mSeq(cols,camps);const v=MD.view=mFiltered();$('#mth').innerHTML=`<tr><th class="c1 l" data-k="code">${cfBtn("code")}품번<small>상품구분 · 판매상태</small></th><th class="nm l" data-k="name">${cfBtn("name")}상품명<small>업체명 · ${esc(BR.srcLbl)} · 카테고리</small></th>${seq.map(e=>{if(e.camp){const c=e.camp;return `<th class="ci" data-k="camp:${esc(c.id)}" style="--r:${e.r}px" title="${esc(campLbl(c))} · 칸에 10%, 5% 처럼 직접 입력">${cfBtn("camp:"+c.id)}${esc(c.name)}<small>${esc(c.plat)}${c.from?' · '+esc(c.from.slice(5).replace('-','/'))+'~'+esc((c.to||'').slice(5).replace('-','/')):''}</small><b class="cn"></b></th>`;}const c=e.col;return `<th data-k="${c.k}" class="${G_CLS[c.g]||''}${c.t==='text'?' l':''}${e.gf?' gf':''}" title="${esc(c.g)} · ${esc(c.l)}${c.s?' ('+esc(c.s)+')':''}">${cfBtn(c.k)}${esc(c.l)}<small>${esc(c.s||c.g)}</small></th>`;}).join('')}</tr>`;
+MD.shown=Math.min(v.length,PAGE);$('#mtb').innerHTML=v.slice(0,MD.shown).map(x=>mRow(x,seq)).join('')||`<tr><td colspan="${cols.length+camps.length+2}" class="l" style="color:#6b7280">해당하는 품번이 없습니다.</td></tr>`;$('#mWrap').scrollTop=0;$('#mShown').textContent=`${fmt(v.length)} / ${fmt(MD.items.length)} 품번 · 열 ${cols.length+2}${camps.length?' + 기획전 '+camps.length:''}`;document.querySelectorAll('#mth th').forEach(th=>th.classList.toggle('on',th.dataset.k===MD.sort));mMoreUpd();mKpis();cfSummary();hsUpd();}
+// ---- 열 제목 끌어 옮기기 (2026-10-28, 직진 · 도착보장과 같은 동작) ----
+// thDrag(표, 설정): 엑셀처럼 열 제목을 잡고 옆으로 끌면 열을 옮김(6px 넘게 움직여야 끌기, 짧게 누르면 지금처럼 정렬). 끄는 동안 놓일 자리에 파란 세로선
+//   설정 = {movable(th) → 옮길 수 있는 열인지, key(th) → 열 키, drop(옮긴 키, 기준 키, 기준 뒤인지), left/right: 고정 열 선택자(표 가장자리 자동 넘김 기준)}
+function thDrag(tbl,o){
+  tbl.addEventListener('pointerdown',e=>{
+    if(e.button>0||e.pointerType==='touch')return;
+    const th=e.target.closest('thead th');if(!th||!tbl.contains(th)||!o.movable(th))return;
+    if(e.target.closest('button,input,select,a,.cfbtn'))return;
+    const wrap=tbl.closest('.wrap')||tbl.parentNode,x0=e.clientX,y0=e.clientY;let on=false,x=x0,line=null,raf=0,tgt=null;
+    const ths=()=>[...tbl.querySelectorAll('thead th')].filter(t=>o.movable(t));
+    const edge=()=>{const wr=wrap.getBoundingClientRect();let l=wr.left,r=wr.right;if(o.left)tbl.querySelectorAll('thead '+o.left).forEach(t=>{l=Math.max(l,t.getBoundingClientRect().right);});if(o.right)tbl.querySelectorAll('thead '+o.right).forEach(t=>{r=Math.min(r,t.getBoundingClientRect().left);});return {wr,l,r};};
+    const place=()=>{const L=ths(),E=edge();tgt=null;for(const t of L){const b=t.getBoundingClientRect();if(x<b.left+b.width/2){tgt={th:t,after:false,x:b.left};break;}}if(!tgt&&L.length){const t=L[L.length-1];tgt={th:t,after:true,x:t.getBoundingClientRect().right};}if(!tgt)return;const hb=th.closest('thead').getBoundingClientRect();const lx=Math.max(E.l,Math.min(E.r,tgt.x));line.style.left=(lx-1)+'px';line.style.top=Math.max(0,hb.top)+'px';line.style.height=Math.max(20,Math.min(innerHeight,E.wr.bottom)-Math.max(0,hb.top))+'px';};
+    const tick=()=>{const E=edge();let d=0;if(x<E.l+50)d=-Math.ceil((E.l+50-x)/4);else if(x>E.r-50)d=Math.ceil((x-(E.r-50))/4);if(d){wrap.scrollLeft+=Math.max(-24,Math.min(24,d));place();}raf=requestAnimationFrame(tick);};
+    const mv=ev=>{x=ev.clientX;if(!on){if(Math.abs(x-x0)<6||Math.abs(x-x0)<Math.abs(ev.clientY-y0))return;on=true;th.classList.add('cmsrc');document.body.classList.add('cmdragging');line=document.createElement('div');line.className='cmline';document.body.appendChild(line);raf=requestAnimationFrame(tick);}place();};
+    const up=()=>{window.removeEventListener('pointermove',mv);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',up);if(!on)return;cancelAnimationFrame(raf);th.classList.remove('cmsrc');document.body.classList.remove('cmdragging');if(line)line.remove();
+      const kill=ev=>{ev.stopPropagation();ev.preventDefault();};window.addEventListener('click',kill,true);setTimeout(()=>window.removeEventListener('click',kill,true),0);
+      if(tgt&&tgt.th!==th)o.drop(o.key(th),o.key(tgt.th),tgt.after);};
+    window.addEventListener('pointermove',mv);window.addEventListener('pointerup',up);window.addEventListener('pointercancel',up);});
+}
+function cmMove(full,from,to,after){const o=full.filter(k=>k!==from);let i=o.indexOf(to);if(i<0)return full;if(after)i++;o.splice(i,0,from);return o;}
+setTimeout(()=>thDrag($('#mtbl'),{movable:th=>!!th.dataset.k&&th.dataset.k!=='code'&&th.dataset.k!=='name'&&!th.dataset.k.startsWith('camp:'),key:th=>th.dataset.k,left:'.c1,.nm',right:'.ci',drop:(f,t,after)=>{MD.colOrder=cmMove(colsOrdered().map(c=>c.k),f,t,after);colsSave();mTable();if(CPP)colpDraw();}}),0);
+// 표 위 가로 막대: #mWrap 의 가로 스크롤과 같이 움직임. 안쪽 너비 = 막대 너비 + 표가 넘치는 만큼(두 막대의 끝이 같음)
+function hsUpd(){const hs=$('#mHs'),w=$('#mWrap');const over=w.scrollWidth-w.clientWidth;hs.hidden=over<=2;if(hs.hidden)return;hs.firstElementChild.style.width=(hs.clientWidth+over)+'px';if(Math.abs(hs.scrollLeft-w.scrollLeft)>1)hs.scrollLeft=w.scrollLeft;}
+function mMoreUpd(){const n=MD.view.length,bar=$('#mMoreBar');bar.hidden=MD.shown>=n;if(!bar.hidden)$('#mMoreTxt').textContent=`${fmt(MD.shown)} / ${fmt(n)} 품번을 보이는 중 · 표를 아래로 내리면 이어서 보입니다`;}
+function mMore(all){const v=MD.view;if(MD.shown>=v.length)return;const n=all?v.length:Math.min(v.length,MD.shown+PAGE);$('#mtb').insertAdjacentHTML('beforeend',v.slice(MD.shown,n).map(x=>mRow(x,MD.seq)).join(''));MD.shown=n;mMoreUpd();}
+function mNear(){if(MD.shown>=MD.view.length)return;const w=$('#mWrap');const inWrap=w.scrollHeight>w.clientHeight+4;if(inWrap?(w.scrollTop+w.clientHeight>w.scrollHeight-900):(w.getBoundingClientRect().bottom<window.innerHeight+900))mMore(false);}
+function mKpis(){const v=MD.view;const sum=k=>v.reduce((a,x)=>{const n=mGet(x,k);return a+(typeof n==='number'?n:0);},0);$('#mCountLbl').textContent=v.length===MD.items.length?'(전체)':'(조건에 맞는 것)';$('#mCount').textContent=fmt(v.length);$('#mCountS').textContent=`판매중 ${fmt(v.filter(x=>x.st==='판매중').length)} · 직진 ${fmt(v.filter(x=>x.kind==='직진').length)} · 스토어 ${fmt(v.filter(x=>x.kind==='스토어').length)} · 부진 ${fmt(v.filter(x=>x.slow==='부진').length)}`;$('#mStock').textContent=`${fmt(sum('jjStock'))} · ${fmt(sum('stock'))}`;$('#mStockS').textContent=`셀메 가용 ${fmt(sum('smAvail'))} · 현재 ${fmt(sum('smStock'))} (조건에 맞는 품번 합계)`;$('#mSalesLbl').textContent=`(${MD.from.slice(5).replace('-','/')}~${MD.to.slice(5).replace('-','/')})`;$('#mSales').textContent=`${fmt(sum('$kkQ'))}개 · ${fmt(sum('$a')/10000)}만원`;$('#mSalesS').textContent=`직진 ${fmt(sum('$kkA')/10000)}만원 · 셀메 ${fmt(sum('$smQ'))}개 ${fmt(sum('$smA')/10000)}만원 · 에이블리 ${fmt(sum('$abQ'))}개 ${fmt(sum('$abA')/10000)}만원`;
+const L=campList(),st={};L.forEach(x=>{st[x.id]=campStat(x);});
+document.querySelectorAll('#mth th.ci').forEach(th=>{const b=th.querySelector('.cn'),s=st[(th.dataset.k||'').slice(5)];if(b&&s){b.textContent=fmt(s.n)+'개 입력';b.classList.toggle('z',!s.n);}});
+[...$('#mCampSel').options].forEach(o=>{const x=MD.camps[o.value];if(x&&st[x.id])o.textContent=campLbl(x)+' · '+fmt(st[x.id].n)+'개'+(x.hide?' · 숨김':'');});
+const c=MD.campSel&&MD.camps[MD.campSel],cnt=$('#mCampCnt');if(c&&!c.deleted){const s=st[c.id]||campStat(c),shown=v.filter(x=>campVal(c,x.key)!=null).length;cnt.hidden=false;cnt.textContent=`입력 ${fmt(s.n)}개`;$('#mCampLbl').textContent='';$('#mCampN').textContent=`${fmt(s.n)}개 품목`;$('#mCampS').textContent=`${campLbl(c)}${s.n?' · '+campBy(s):' · 아직 입력한 품목이 없습니다'}${shown!==s.n?' · 조건에 맞는 것 중 '+fmt(shown)+'개':''}${c.hide?' · "표에서 숨기기"가 켜져 있음(고른 동안만 열이 보임)':''}`;}else{cnt.hidden=true;$('#mCampLbl').textContent='';$('#mCampN').textContent=L.length?`기획전 ${fmt(L.length)}개`:'-';$('#mCampS').textContent=L.length?L.slice(0,4).map(x=>`${x.name} ${fmt(st[x.id].n)}개`).join(' · ')+(L.length>4?` · 외 ${L.length-4}개`:''):'＋ 새 기획전으로 기획전 열을 만드세요';}}
+// 기획전별 입력 품목 수: 지금 상품마스터 목록에 있는 품번만 셈(n). L 은 적은 값별 개수(많은 순)
+function campStat(c){const K=MD.keys;const by={};let n=0;for(const k in (c.items||{})){if(!K.has(k)||campVal(c,k)==null)continue;n++;const t=campTxt(c,k);by[t]=(by[t]||0)+1;}return {n,L:Object.entries(by).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'ko'))};}
+function campBy(s){return s.L.slice(0,5).map(e=>`${e[0]} ${fmt(e[1])}개`).join(' · ')+(s.L.length>5?` · 외 ${s.L.length-5}종`:'');}
+function mCampSel(){const sel=$('#mCampSel');const L=campList();sel.innerHTML='<option value="">(선택)</option>'+L.map(c=>`<option value="${esc(c.id)}"${c.id===MD.campSel?' selected':''}>${esc(campLbl(c))}${c.hide?' · 숨김':''}</option>`).join('');if(MD.campSel&&!MD.camps[MD.campSel])MD.campSel='';sel.value=MD.campSel;const on=!!MD.campSel;$('#mCampEdit').disabled=$('#mCampCsv').disabled=$('#mCampOnly').disabled=!on;if(!on){MD.campOnly=false;$('#mCampOnly').checked=false;}}
+function mStatus(){const st=$('#mSt'),gh=$('#mGh');gh.textContent=S.token?'GitHub 연결됨 ✓':'GitHub 연결';gh.title=S.token?'연결되어 있습니다. 누르면 토큰을 바꾸거나 연결을 해제할 수 있습니다':'GitHub 토큰을 넣으면 기획전 · 부진 입력이 다른 기기에서도 같이 보입니다';if(MD.dirty){st.textContent=S.token?'저장 안 됨 · [저장] 을 누르면 GitHub 에 올라갑니다':'이 기기에만 저장됨 (GitHub 미연결 · [GitHub 연결] 을 눌러 연결)';st.style.color='var(--warn)';}else{st.textContent=S.token?'GitHub 연결됨'+(MD.lastSaved?' · '+MD.lastSaved.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})+' 저장':''):'GitHub 미연결 · 기획전 · 부진 입력은 이 기기에만 남습니다 ([GitHub 연결] 을 눌러 연결)';st.style.color='';}}
+function mTabsInit(){const nav=$('#mTabs');if(BRAND!=='dali'){nav.hidden=true;MD.tab='all';return;}nav.hidden=false;$('#mTabExclN').textContent='('+fmt(MD.items.filter(x=>x.excl).length)+')';nav.querySelectorAll('button').forEach(b=>{b.onclick=()=>{MD.tab=b.dataset.mt;nav.querySelectorAll('button').forEach(o=>o.classList.toggle('on',o===b));masterRender();};});}function masterRender(){mCampSel();mTable();mStatus();}
+function campForm(id){MD.editId=id||null;const c=id&&MD.camps[id];$('#campTitle').textContent=c?'기획전 편집':'새 기획전';$('#campPlat').value=c?c.plat:'지그재그';$('#campName').value=c?c.name:'';$('#campFrom').value=c?c.from||'':todayKst();$('#campTo').value=c?c.to||'':'';$('#campHide').checked=!!(c&&c.hide);$('#campDel').hidden=!c;$('#campErr').textContent='';$('#campOv').hidden=false;$('#campName').focus();}
+function dlCsv(table,name){const csv='﻿'+table.map(r=>r.map(c=>{const s=String(c==null?'':c);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(',')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);}
+// CSV: 화면에 그려진 행이 아니라 지금 조건에 맞는 품번 전체를 자료에서 바로 만듦 (숫자는 쉼표 없이)
+function csvVal(c,v){if(v==null||v==='')return '';if(typeof v!=='number')return String(v);if(c.t==='id')return String(v);if(c.t==='pct')return (Math.round(v*1000)/10)+'%';if(c.t==='dec')return v.toFixed(2);return String(Math.round(v*100)/100);}
+function masterCsv(){const seq=MD.seq;const H=['품번','상품명',...seq.map(e=>e.camp?`${e.camp.name} (${e.camp.plat})`:e.col.l)];const T=[H];MD.view.forEach(x=>{T.push([x.code,x.name||'',...seq.map(e=>e.camp?campTxt(e.camp,x.key):csvVal(e.col,mGet(x,e.col.k)))]);});dlCsv(T,`${CFG.label}_상품마스터_${ymd(todayKst())}.csv`);toast(`상품마스터 ${fmt(T.length-1)}행 CSV 내려받음`);}
+function loadXLSX(){return window.XLSX?Promise.resolve():new Promise((res,rej)=>{const s=document.createElement('script');s.src=CFG.xlsx;s.onload=res;s.onerror=()=>rej(new Error('엑셀 라이브러리를 불러오지 못했습니다 (인터넷 연결 확인)'));document.head.appendChild(s);});}
+// 기획전 참여 상품 엑셀: 값을 적은 품목만, 기획전 플랫폼의 상품코드를 맨 앞 열에 둠(지그재그=스토어 상품번호+직진 상품번호, 에이블리=상품번호, 퀸잇=상품코드, 기타=셋 다)
+const CAMP_PLAT={'지그재그':{codes:[['zzNo','지그재그 상품코드'],['jjNo','지그재그 직진 상품번호']],price:[['zzPrice','스토어 판매가'],['zzSale','할인 판매가']]},'에이블리':{codes:[['abNo','에이블리 상품코드']],price:[['abPrice','에이블리 판매가'],['abFinal','최종 판매가(앱)']]},'퀸잇':{codes:[['qnNo','퀸잇 상품코드']],price:[]},'기타':{codes:[['zzNo','지그재그 상품코드'],['abNo','에이블리 상품코드'],['qnNo','퀸잇 상품코드']],price:[]}};
+async function campXlsx(){const c=MD.camps[MD.campSel];if(!c)return;const P=CAMP_PLAT[c.plat]||CAMP_PLAT['기타'];const L=MD.items.filter(x=>campVal(c,x.key)!=null);if(!L.length)return toast('참여 상품이 없습니다 · 노란 열에 10%, 5% 처럼 적어 주세요');try{await loadXLSX();}catch(e){return toast(e.message||String(e),4000);}
+const codeCell=v=>{if(v==null||v==='')return '';const s=String(v).trim();return /^\d{1,15}$/.test(s)&&!/^0\d/.test(s)?{t:'n',v:+s,z:'0'}:s;};const numCell=v=>v==null||v===''?'':v;const main=P.codes[0][0];let miss=0;const XP=BR.xlsxPrice;
+const H=[...P.codes.map(p=>p[1]),'품번','상품명','기획전 입력',...XP.map(colLbl),...P.price.map(p=>p[1]),'비고'];
+const rows=L.map(x=>{const fb=x.fb||[];const memo=[];if(c.plat!=='기타'&&(x[main]==null||x[main]==='')){miss++;memo.push(c.plat+' 상품코드 없음 (미등록이거나 확인 필요)');}if(P.codes.some(p=>p[0]==='abNo')&&x.abNo!=null&&x.abVia)memo.push('에이블리에는 품번 '+x.abVia+' 로 등록'+(x.abViaName?' (상품명 기준, 확인 필요)':''));if(P.codes.some(p=>p[0]==='abNo')&&fb.includes('abNo'))memo.push('에이블리 상품코드는 엑셀 마스터 값');if(P.codes.some(p=>p[0]==='qnNo')&&x.qnNo!=null&&x.qnNo!==''&&fb.includes('qnNo'))memo.push('퀸잇 상품코드는 엑셀 마스터 값');return [...P.codes.map(p=>codeCell(x[p[0]])),x.code,x.name||'',campTxt(c,x.key),...XP.map(k=>numCell(x[k])),...P.price.map(p=>numCell(x[p[0]])),memo.join(' / ')];});
+const ws=XLSX.utils.aoa_to_sheet([H,...rows]);ws['!cols']=[...P.codes.map(()=>({wch:20})),{wch:16},{wch:48},{wch:14},...XP.map(()=>({wch:13})),...P.price.map(()=>({wch:14})),{wch:44}];ws['!autofilter']={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:rows.length,c:H.length-1}})};const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,('기획전_'+c.plat).slice(0,31));XLSX.writeFile(wb,`${CFG.label}_기획전_${c.plat}_${c.name.replace(/[\\/:*?"<>|]/g,' ')}_${ymd(c.from||todayKst())}.xlsx`);toast(`${c.name} 참여 상품 ${fmt(rows.length)}개 엑셀 내려받음`+(miss?` · ${c.plat} 상품코드 없는 품목 ${fmt(miss)}개 (비고 열 확인)`:''),miss?5000:2500);}
+
+// ---- 이벤트 ----
+$('#loginForm').addEventListener('submit',e=>{e.preventDefault();start($('#pw').value,$('#remember').checked);});
+let qT;$('#mQ').addEventListener('input',e=>{MD.q=e.target.value;clearTimeout(qT);qT=setTimeout(mTable,180);});
+$('#mCsv').addEventListener('click',masterCsv);
+$('#mPreset').addEventListener('change',e=>{MD.preset=e.target.value;if(MD.preset==='custom'){if(!MD.from)MD.from=MD.to=todayKst();}mRangeApply(true);mTable();});
+['mFrom','mTo'].forEach(id=>$('#'+id).addEventListener('change',()=>{const f=$('#mFrom').value,t=$('#mTo').value;if(!f||!t)return;MD.preset='custom';MD.from=f<=t?f:t;MD.to=f<=t?t:f;mRangeApply(true);mTable();}));
+$('#mth').addEventListener('click',e=>{const fb=e.target.closest('.cfbtn');if(fb){e.stopPropagation();if(CFP&&CFP.dataset.k===fb.dataset.fk)return cfClose();cfOpen(fb.dataset.fk,fb);return;}const th=e.target.closest('th');if(!th||!th.dataset.k)return;const k=th.dataset.k;if(MD.sort===k)MD.dir=-MD.dir;else{MD.sort=k;MD.dir=1;}mTable();});
+$('#mtb').addEventListener('change',e=>{const inp=e.target;const td=inp.closest('td.ci');if(!td)return;const c=MD.camps[td.dataset.c],key=inp.closest('tr').dataset.key;if(!c)return;const t=inp.value.trim();const v=t===''?null:t;if(inp.value!==t)inp.value=t;campSet(c,key,v);td.classList.toggle('has',v!=null);});
+$('#mtb').addEventListener('keydown',e=>{if(e.key!=='Enter'||!e.target.closest('td.ci'))return;e.preventDefault();const td=e.target.closest('td.ci');let ins=[...document.querySelectorAll(`#mtb td.ci[data-c="${CSS.escape(td.dataset.c)}"] input`)],i=ins.indexOf(e.target);if(!ins[i+1]&&MD.shown<MD.view.length){mMore(false);ins=[...document.querySelectorAll(`#mtb td.ci[data-c="${CSS.escape(td.dataset.c)}"] input`)];}if(ins[i+1]){ins[i+1].focus();if(ins[i+1].select)ins[i+1].select();}});
+$('#mWrap').addEventListener('scroll',mNear,{passive:true});
+window.addEventListener('scroll',mNear,{passive:true});
+$('#mMoreBtn').addEventListener('click',()=>mMore(false));
+$('#mAllBtn').addEventListener('click',()=>mMore(true));
+$('#mCampSel').addEventListener('change',e=>{MD.campSel=e.target.value;masterRender();if(MD.campSel){const c=MD.camps[MD.campSel];toast(c&&c.hide?'이 기획전은 "표에서 숨기기"가 켜져 있어 고른 동안만 열이 보입니다 · [편집]에서 끌 수 있습니다':'표 오른쪽 끝의 노란 열에 입력하세요',3500);}});
+$('#mCampNew').addEventListener('click',()=>campForm(null));
+$('#mCampEdit').addEventListener('click',()=>{if(MD.campSel)campForm(MD.campSel);});
+$('#mCampCsv').addEventListener('click',campXlsx);
+$('#mCampOnly').addEventListener('change',e=>{MD.campOnly=e.target.checked;mTable();});
+$('#mSave').addEventListener('click',campSaveRemote);
+$('#campForm').addEventListener('submit',e=>{e.preventDefault();const name=$('#campName').value.trim();if(!name){$('#campErr').textContent='기획전 이름을 넣어 주세요.';return;}const from=$('#campFrom').value,to=$('#campTo').value;if(from&&to&&to<from){$('#campErr').textContent='끝나는 날이 시작일보다 앞입니다.';return;}const old=MD.editId&&MD.camps[MD.editId];const kind=old&&old.kind?old.kind:'text';const id=old?old.id:'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);MD.camps[id]={id,plat:$('#campPlat').value,name,from,to,kind,hide:$('#campHide').checked,items:old?old.items||{}:{},updatedAt:new Date().toISOString()};MD.campSel=id;MD.dirty=true;campSaveLocal();$('#campOv').hidden=true;masterRender();toast(old?'기획전을 고쳤습니다 · [저장] 을 누르면 다른 기기에도 반영됩니다':'기획전 열을 만들었습니다 (표 오른쪽 끝에 노란 열) · 품목마다 10%, 5% 처럼 적은 뒤 [저장]');});
+$('#campCancel').addEventListener('click',()=>{$('#campOv').hidden=true;});
+$('#campDel').addEventListener('click',()=>{const c=MD.editId&&MD.camps[MD.editId];if(!c)return;const n=Object.values(c.items||{}).filter(it=>it[0]!=null).length;if(!confirm(`"${c.name}" 기획전을 지울까요?${n?' 표시한 '+n+'개 품목의 선택도 같이 지워집니다.':''}`))return;MD.camps[c.id]={id:c.id,deleted:true,updatedAt:new Date().toISOString(),items:{}};if(MD.campSel===c.id)MD.campSel='';MD.dirty=true;campSaveLocal();$('#campOv').hidden=true;masterRender();});
+document.querySelectorAll('.ms').forEach(el=>{const id=el.id,pan=el.querySelector('.msp');el.querySelector('.msb').addEventListener('click',()=>{const open=pan.hidden;document.querySelectorAll('.ms .msp').forEach(p=>p.hidden=true);pan.hidden=!open;});pan.addEventListener('change',e=>{const c=e.target;if(c.type!=='checkbox')return;const m=MS[id];if(c.checked)m.set.add(c.value);else m.set.delete(c.value);msLabel(id);m.onChange();});pan.addEventListener('click',e=>{if(e.target.closest('[data-clear]')){msSet(id,[]);MS[id].onChange();}});});
+document.addEventListener('click',e=>{if(CFP&&!e.composedPath().includes(CFP))cfClose();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&CFP)cfClose();});document.addEventListener('scroll',e=>{if(CFP&&!CFP.contains(e.target))cfClose();},true);window.addEventListener('resize',cfClose);
+$('#mCfClr').addEventListener('click',()=>{MD.cf={};cfClose();mTable();toast('열 필터를 모두 해제했습니다');});
+document.addEventListener('click',e=>{if(!e.target.closest('.ms'))document.querySelectorAll('.ms .msp').forEach(p=>p.hidden=true);});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.ms .msp').forEach(p=>p.hidden=true);});
+$('#brands').addEventListener('click',e=>{const a=e.target.closest('a[data-brand]');if(!a||a.dataset.brand===CFG.brand)return;if(MD.dirty&&S.token&&!confirm('아직 GitHub 에 저장하지 않은 기획전 입력이 있습니다(이 기기에는 남아 있음). 그래도 '+BRANDS[a.dataset.brand].label+' 자료로 바꿀까요?'))return;MD.dirty=false;location.href=location.pathname+'?brand='+a.dataset.brand;});
+function tokenOpen(){$('#tokenIn').value='';$('#tokenErr').textContent=S.token?'현재 연결됨. 새 토큰을 넣거나 비워 두고 저장하면 해제됩니다.':'';$('#tokenOv').hidden=false;$('#tokenIn').focus();}
+$('#mGh').addEventListener('click',tokenOpen);
+// 다른 탭(직진 재고·출고 대시보드 등)에서 토큰을 넣거나 지우면 이 탭에도 바로 반영
+window.addEventListener('storage',e=>{if(e.key===CFG.lsToken){S.token=e.newValue||'';MD.campSha=null;mStatus();}});
+$('#mMore').addEventListener('click',()=>{const m=$('#mMoreMenu');m.hidden=!m.hidden;});
+$('#mSlowBtn').addEventListener('click',()=>{const m=$('#mSlowMenu');m.hidden=!m.hidden;});
+document.addEventListener('click',e=>{if(!e.target.closest('#mSlowWrap'))$('#mSlowMenu').hidden=true;});
+$('#mSlowMenu').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$('#mSlowMenu').hidden=true;const v=b.dataset.s,keys=MD.view.map(x=>x.key);if(!keys.length)return toast('표에 보이는 품번이 없습니다');const what=v?v+'으로 바꿀':'직접 입력을 지우고 기본값으로 되돌릴';if(!confirm('지금 표에 보이는 '+fmt(keys.length)+'개 품번을 '+what+'까요?\n(검색 · 필터 결과 전체이고, 아래로 내려야 보이는 품번도 포함됩니다)'))return;const n=slowSet(keys,v||null);slowOpts();mTable();toast(n?fmt(n)+'개 품번을 바꿨습니다 · [저장] 을 눌러야 다른 기기에도 보입니다':'바뀐 품번이 없습니다',3500);});
+$('#mtb').addEventListener('click',e=>{const b=e.target.closest('.slb');if(!b)return;const x=MD.byKey.get(b.dataset.sl);if(!x)return;slowSet([x.key],x.slow==='부진'?'정상':'부진');const tr=b.closest('tr');if(tr)tr.outerHTML=mRow(x,MD.seq);mKpis();});
+$('#mMoreMenu').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$('#mMoreMenu').hidden=true;if(b.dataset.m==='gh')tokenOpen();else if(b.dataset.m==='pw'){if(!confirm('이 기기에 기억한 비밀번호를 지우고 비밀번호 입력 화면으로 돌아갈까요?'))return;ls('clv_pw',null);try{sessionStorage.removeItem('clv_pw_s');}catch(e){}location.reload();}});
+document.addEventListener('click',e=>{if(!e.target.closest('.mm'))$('#mMoreMenu').hidden=true;});
+// ---- 열 설정 창: ☰ 를 끌어 순서 바꾸기, 체크를 풀어 숨기기 (바꿀 때마다 바로 표에 반영하고 이 기기에 기억) ----
+let CPP=null;
+function colpClose(){if(CPP){CPP.remove();CPP=null;}$('#mCols').classList.remove('on');}
+function colpCount(){if(!CPP)return;const n=MCOLS.length,h=MCOLS.filter(c=>MD.colHide.has(c.k)).length;CPP.querySelector('.cph span').textContent=`보이는 열 ${fmt(n-h)} / ${fmt(n)}`+(MD.groups.size?' · 열 묶음 필터 켜짐':'');}
+function colpDraw(){if(!CPP)return;const gOff=g=>MD.groups.size>0&&!MD.groups.has(g);CPP.querySelector('.cpl').innerHTML=colsOrdered().map(c=>{const off=MD.colHide.has(c.k);return `<div class="cpr${off?' off':''}${gOff(c.g)?' gh':''}" data-k="${esc(c.k)}"><span class="hd" title="끌어서 순서 바꾸기" aria-hidden="true">☰</span><input type="checkbox"${off?'':' checked'} aria-label="${esc(c.g+' '+c.l)} 보이기"><span class="v" title="${esc(c.g+' · '+c.l+(c.s?' ('+c.s+')':''))}">${esc(c.l)}</span><small>${esc(c.g)}${gOff(c.g)?' · 열 묶음에서 빠짐':''}</small></div>`;}).join('');colpCount();}
+function colpApply(){colsSave();mTable();colpCount();}
+function colpOpen(btn){colpClose();const p=CPP=document.createElement('div');p.className='colp';p.setAttribute('role','dialog');p.setAttribute('aria-label','열 설정');
+  p.innerHTML=`<div class="cph"><b>열 설정</b><span></span></div><div class="cpf">☰ 를 끌어서 순서를 바꾸고, 체크를 풀면 그 열을 숨깁니다. 품번·상품명은 항상 왼쪽, 기획전 열은 항상 오른쪽 끝에 보입니다. 설정은 이 기기에 기억됩니다.</div><div class="cpl"></div><div class="cpb"><button type="button" class="btn sub" data-a="reset">기본값으로</button><button type="button" class="btn sub" data-a="all">모두 보이기</button><button type="button" class="btn pri" data-a="close">닫기</button></div>`;
+  document.body.appendChild(p);colpDraw();btn.classList.add('on');
+  const r=btn.getBoundingClientRect();p.style.left=Math.max(8,Math.min(r.left,innerWidth-p.offsetWidth-8))+'px';const top=r.bottom+4;p.style.top=(top+p.offsetHeight>innerHeight-8?Math.max(8,innerHeight-8-p.offsetHeight):top)+'px';
+  const list=p.querySelector('.cpl');
+  list.addEventListener('change',e=>{const cb=e.target;if(cb.type!=='checkbox')return;const row=cb.closest('.cpr'),k=row.dataset.k;if(cb.checked)MD.colHide.delete(k);else{MD.colHide.add(k);if(MD.cf[k])delete MD.cf[k];if(MD.sort===k)MD.sort='';}row.classList.toggle('off',!cb.checked);colpApply();});
+  p.querySelector('.cpb').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;if(a==='close')return colpClose();if(a==='reset'){if((MD.colHide.size||colsCustomOrder())&&!confirm('열 순서와 숨긴 열을 처음 상태로 되돌릴까요?'))return;MD.colOrder=null;MD.colHide.clear();}else if(a==='all')MD.colHide.clear();colpDraw();colpApply();});
+  list.addEventListener('pointerdown',e=>{const h=e.target.closest('.hd');if(!h||e.button>0)return;e.preventDefault();const row=h.closest('.cpr');row.classList.add('drag');p.classList.add('dragging');let y=e.clientY,raf=0;
+    const place=()=>{let before=null;for(const r of list.children){if(r===row)continue;const b=r.getBoundingClientRect();if(y<b.top+b.height/2){before=r;break;}}if(before){if(row.nextElementSibling!==before)list.insertBefore(row,before);}else if(list.lastElementChild!==row)list.appendChild(row);};
+    const tick=()=>{const b=list.getBoundingClientRect();let d=0;if(y<b.top+32)d=-Math.ceil((b.top+32-y)/3);else if(y>b.bottom-32)d=Math.ceil((y-(b.bottom-32))/3);if(d){list.scrollTop+=Math.max(-16,Math.min(16,d));place();}raf=requestAnimationFrame(tick);};raf=requestAnimationFrame(tick);
+    const mv=ev=>{y=ev.clientY;place();};
+    const up=()=>{cancelAnimationFrame(raf);window.removeEventListener('pointermove',mv);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',up);row.classList.remove('drag');p.classList.remove('dragging');const order=[...list.children].map(r=>r.dataset.k);if(order.join('|')!==colsOrdered().map(c=>c.k).join('|')){MD.colOrder=order;colpApply();}};
+    window.addEventListener('pointermove',mv);window.addEventListener('pointerup',up);window.addEventListener('pointercancel',up);});}
+$('#mCols').addEventListener('click',e=>{e.stopPropagation();if(CPP)colpClose();else colpOpen(e.currentTarget);});
+document.addEventListener('click',e=>{if(CPP&&e.target.isConnected&&!CPP.contains(e.target)&&!e.target.closest('#mCols'))colpClose();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(CPP)colpClose();$('#mMoreMenu').hidden=true;}});
+// ---- 표 위 가로 막대와 표 아래 막대를 같이 움직임 ----
+$('#mHs').addEventListener('scroll',()=>{const hs=$('#mHs'),w=$('#mWrap');if(Math.abs(w.scrollLeft-hs.scrollLeft)>1)w.scrollLeft=hs.scrollLeft;},{passive:true});
+$('#mWrap').addEventListener('scroll',()=>{const hs=$('#mHs'),w=$('#mWrap');if(!hs.hidden&&Math.abs(w.scrollLeft-hs.scrollLeft)>1)hs.scrollLeft=w.scrollLeft;},{passive:true});
+window.addEventListener('resize',hsUpd);
+if(window.ResizeObserver){const ro=new ResizeObserver(()=>hsUpd());ro.observe($('#mtbl'));ro.observe($('#mWrap'));}
+$('#tokenForm').addEventListener('submit',async e=>{e.preventDefault();const t=$('#tokenIn').value.trim();if(!t){ls(CFG.lsToken,null);S.token='';MD.campSha=null;$('#tokenOv').hidden=true;mStatus();toast('GitHub 연결을 해제했습니다');return;}S.token=t;try{const g=await ghGetPath(MC.path);MD.campSha=g.sha;if(g.json)MD.camps=campMerge(await decJson(g.json,S.pw),MD.camps);campSaveLocal();ls(CFG.lsToken,t);$('#tokenOv').hidden=true;masterRender();toast('GitHub 에 연결했습니다');}catch(err){S.token='';$('#tokenErr').textContent=err.message||String(err);}});
+$('#tokenCancel').addEventListener('click',()=>{$('#tokenOv').hidden=true;});
+window.addEventListener('beforeunload',e=>{if(MD.dirty&&S.token){e.preventDefault();e.returnValue='';}});
+(function(){let pw='';try{pw=sessionStorage.getItem('clv_pw_s')||localStorage.getItem('clv_pw')||'';}catch(e){}if(pw){$('#pw').value=pw;start(pw,true);}})();
+})();
+</script>
+</body></html>
